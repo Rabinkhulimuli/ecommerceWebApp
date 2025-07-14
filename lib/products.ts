@@ -112,12 +112,22 @@ const products: Product[] = [
   },
 ]
 
-export async function getProducts(): Promise<Product[]> {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  return products
-}
+export async function getProducts(): Promise<Product[]| null> {
 
+  try{
+     const data = await fetch("http://localhost:3000/api/products")
+ 
+    if(!data.ok){
+      return null
+    }
+       const res= data.json()
+     console.log(res)
+      return res
+  }catch(err){
+    console.log(err)
+    throw new Error("error getting product")
+  }
+}
 export async function getProduct(id: string): Promise<Product | null> {
   await new Promise((resolve) => setTimeout(resolve, 300))
   return products.find((product) => product.id === id) || null

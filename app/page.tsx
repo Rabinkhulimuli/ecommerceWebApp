@@ -3,6 +3,7 @@ import { ProductGrid } from "@/components/product-grid"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedCategories } from "@/components/featured-categories"
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
+import DropdownCreateProduct from "@/components/admin/DropdownCreateProduct"
 
 export default function HomePage() {
   return (
