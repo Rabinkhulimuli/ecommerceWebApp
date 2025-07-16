@@ -6,11 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   Form,
   FormControl,
@@ -22,6 +21,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 const signInSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -32,7 +32,8 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
-
+  const router= useRouter()
+  const {data}= useSession()
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -53,6 +54,7 @@ export default function SignIn() {
           title: "Welcome back!",
           description: "You have been successfully signed in.",
         });
+        router.push("/")
       if (!res?.ok) {
         toast({
           title: "Sign in failed",
@@ -68,7 +70,10 @@ export default function SignIn() {
       });
     }
   };
+  if(data&&data.user){
 
+    return router.push("/")
+  }
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">

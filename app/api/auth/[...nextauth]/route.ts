@@ -16,6 +16,9 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const user = await prisma.user.findUnique({
           where: { email: credentials?.email },
+          include:{
+            image:true
+          }
         });
 
         if (!user) throw new Error("User not found");
@@ -29,6 +32,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          image:user.image?.url
         };
       },
     }),

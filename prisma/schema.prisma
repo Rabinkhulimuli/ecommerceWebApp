@@ -44,7 +44,7 @@ model User {
   order Order[] 
   cartItems CartItem[] 
   reviews Review[]
-  addresses Address[]
+  addresses Address[] @relation("UserAddresses")
   wishlist WishList[]
 }
 
@@ -72,7 +72,7 @@ enum OrderStatus{
 }
 model Address{
   id String @id @default(uuid())
-  user User @relation(fields: [userId],references: [id])
+  user User @relation("UserAddresses",fields: [userId],references: [id],onDelete: Cascade)
   order Order @relation(fields: [orderId],references: [id])
   orderId String @unique
   userId String
@@ -80,6 +80,11 @@ model Address{
   city String
   country String
   postalCode String
+  isPrimary Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  @@unique([userId,isPrimary],name:"OnlyOnePrimaryAddressPerUser")
 }
 model OrderItem{
   id String @default(uuid()) @id

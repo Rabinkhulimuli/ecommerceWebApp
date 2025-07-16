@@ -7,7 +7,6 @@ import { Footer } from "@/components/footer"
 import { CartProvider } from "@/components/cart-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/components/auth-provider"
-
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {

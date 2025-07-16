@@ -11,9 +11,9 @@ export const config = {
 };
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_USER_PROFILE_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_USER_PROFILE_API_KEY,
+  api_secret: process.env.CLOUDINARY_USER_PROFILE_API_SECRET,
 });
 
 export async function POST(request: Request) {
@@ -27,12 +27,39 @@ export async function POST(request: Request) {
     const imageFile = formData.get("avatar") as File | null;
 
     // Validate required fields
-    if (!email || !name || !password || !otp) {
+    /* if (!email || !name || !password || !otp) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
       );
-    }
+    } */
+if (!email) {
+  return NextResponse.json(
+    { error: "Email is required" },
+    { status: 400 }
+  );
+}
+
+if (!name) {
+  return NextResponse.json(
+    { error: "Name is required" },
+    { status: 400 }
+  );
+}
+
+if (!password) {
+  return NextResponse.json(
+    { error: "Password is required" },
+    { status: 400 }
+  );
+}
+
+if (!otp) {
+  return NextResponse.json(
+    { error: "OTP is required" },
+    { status: 400 }
+  );
+}
 
     // Validate OTP
     const otpEntry = await prisma.oTP.findFirst({

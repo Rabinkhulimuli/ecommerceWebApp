@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, User, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, User, Search, Menu, X, Divide } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/hooks/use-cart";
-import { useAuth } from "@/hooks/use-auth";
+import { VscLoading } from "react-icons/vsc";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,12 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import AdminComponent from "./admin/AdminComponent";
-
+import {useSession,signOut} from "next-auth/react"
+import Image from "next/image";
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { items } = useCart();
-  const { user, signOut } = useAuth();
- 
+  const {data,status}= useSession()
+
+  const user= data?.user
+  const image= data?.user.image
+  console.log("user image",image)
+ console.log("header user",user)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -31,7 +36,7 @@ export function Header() {
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600" />
               <span className="text-xl font-bold text-gray-900">
-                ModernStore
+                XCLUSIVE
               </span>
             </Link>
           </div>
@@ -87,10 +92,12 @@ export function Header() {
             </Link>
 
             {user ? (
+              status!="loading"?
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
+                  <Button variant="ghost" size="icon" className=" relative rounded-full w-10 h-10">
+                    {image?<Image src={image} className=" rounded-full object-cover  object-top" alt="profile image" sizes="25px" fill />:
+                    <User className="h-5 w-5" />}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -100,11 +107,11 @@ export function Header() {
                   <DropdownMenuItem asChild>
                     <Link href="/orders">Orders</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={signOut}>
+                  <DropdownMenuItem onClick={()=> signOut({callbackUrl:"/auth/sign-in"})}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu>: <div className="animate-spin ease-in-out"> <VscLoading/></div>
             ) : (
               <Link href="/auth/sign-in">
                 <Button variant="outline" size="sm">
