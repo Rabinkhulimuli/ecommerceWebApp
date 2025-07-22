@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from './ImageUploader';
 import CategorySelector from './CategorySelector';
+import { useToast } from '../ui/use-toast';
 
 export default function CreateProductForm() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function CreateProductForm() {
     categoryId: '',
     images: [] as File[]
   });
-
+const {toast}=useToast()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setProductData(prev => ({
@@ -53,12 +54,24 @@ export default function CreateProductForm() {
       });
 
       if (response.ok) {
+        toast({
+          title:"Success",
+          description:"Successfully items created"
+        })
         console.log(response.json())
         router.push('/products');
       } else {
+         toast({
+          title:"Error",
+          description:"items failed to create"
+        })
         throw new Error('Failed to create product');
       }
     } catch (error) {
+       toast({
+          title:"Error",
+          description:error?.message||"failed to create items"
+        })
       console.error('Error creating product:', error);
     } finally {
       setIsSubmitting(false);

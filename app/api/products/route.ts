@@ -4,7 +4,12 @@ import prisma from "@/lib/prisma"
 
 export async function GET() {
   try {
-    const products = await prisma.product.findMany()
+    const products = await prisma.product.findMany({
+      include:{
+        images:true,
+        category:true
+      }
+    })
     console.log("products",products)
     return NextResponse.json(products)
   } catch (error) {

@@ -1,20 +1,46 @@
 export interface Product {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
-
   discount?: number;
   images: {
     url: string;
     publicId: string;
   }[];
   categoryId: string;
+  category?:string;
   rating?: number;
   reviews?: number;
   stock: number;
 }
+export type CartItemResponsetype = {
+  id: string;
+  quantity: number;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    discount: number;
+    images: {
+      id: string;
+      url: string;
+      thumbnailUrl: string;
+      altText: string;
+    }[];
+    category: string;
+  };
+}[];
 
+export interface  CartItemProps {
+  product:Product;
+  quantity:number
+}
+export interface cartItemRersponse{
+  id:String;
+  product:Product
+  quantity:number
+}
 export interface User {
   id: string;
   email: string;

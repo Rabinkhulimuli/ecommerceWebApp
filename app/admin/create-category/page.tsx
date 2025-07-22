@@ -1,12 +1,17 @@
 "use client"
+import { useToast } from '@/hooks/use-toast';
+import { Description } from '@radix-ui/react-toast';
+import { title } from 'process';
 import React, { useState } from 'react';
-
 export default function Category() {
   const [name, setName] = useState("");
-
+  const {toast}= useToast()
   const handleSubmit = async () => {
     if (!name.trim()) {
-      alert("Category name cannot be empty");
+      toast({
+        title:"Error",
+        description:"Category name cannot be empty"
+      });
       return;
     }
 
@@ -23,14 +28,23 @@ export default function Category() {
       console.log("Response:", result);
 
       if (res.ok) {
-        alert("Category added successfully!");
+        toast({
+          title:"Success",
+          description:"Category added successfully!"
+        });
         setName(""); // Clear the input
       } else {
-        alert(result?.message || "Failed to add category");
+        toast({
+          title:"Error",
+          description:result?.message || "Failed to add category"
+        });
       }
     } catch (error) {
       console.error("Error submitting category:", error);
-      alert("Something went wrong");
+      toast({
+        title:'Error',
+        description:"Something went wrong"
+      });
     }
   };
 

@@ -14,11 +14,14 @@ const addressSchema = z.object({
   street: z.string().min(3, "Street must be at least 3 characters").optional(),
   city: z.string().min(2, "City must be at least 2 characters"),
   country: z.string().min(2, "Country must be at least 2 characters"),
-  postalCode: z.string().regex(/^[a-zA-Z0-9\s-]+$/, "Invalid postal code format"),
+  postalCode: z
+    .string()
+    .regex(/^[a-zA-Z0-9\s-]+$/, "Invalid postal code format"),
+  isPrimary: z.boolean().default(false),
 });
 
 const profileSchema = z.object({
-  id:z.string(),
+  id: z.string(),
   name: z.string().min(1, "Name is required").max(50),
   email: z.string().email("Invalid email address"),
   avatar: z.any().optional(),
@@ -46,7 +49,7 @@ export default function ProfilePage() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      id:"",
+      id: "",
       name: "",
       email: "",
       avatar: null,
@@ -54,7 +57,6 @@ export default function ProfilePage() {
       primaryAddressIndex: 0,
     },
   });
-  
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -70,9 +72,9 @@ export default function ProfilePage() {
         const res = await fetch("http://localhost:3000/api/user");
         if (res.ok) {
           const data = await res.json();
-          console.log(data)
+          console.log(data);
           reset({
-            id:data.id||"",
+            id: data.id || "",
             name: data.name || "",
             email: data.email || "",
             avatar: null,
@@ -91,51 +93,51 @@ export default function ProfilePage() {
   }, [reset]);
 
   const onSubmit = async (data: ProfileFormData) => {
-    setLoading(true);
-    
-    try {
-      const formData = new FormData();
-      if (!data.id){
-        console.log("invalid user ")
-        return
-      }
-      formData.append("id",data.id)
-      formData.append("name", data.name);
-      formData.append("email", data.email);
+  setLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append("id", data.id);
+    formData.append("name", data.name);
+    formData.append("email", data.email);
 
-      // Handle avatar upload if it's a File object
-      if (data.avatar instanceof File) {
-        formData.append("avatar", data.avatar);
-      } else if (typeof data.avatar === "string") {
-        // If it's a string (existing URL), send it as is
-        formData.append("avatarUrl", data.avatar);
-      }
-
-      // Add addresses
-      data.addresses.forEach((address, index) => {
-        formData.append(`addresses[${index}]`, JSON.stringify(address));
-      });
-      
-      formData.append("primaryAddressIndex", data.primaryAddressIndex.toString());
-
-      const res = await fetch("http://localhost:3000/api/user", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Failed to update profile");
-      }
-
-      toast.success("Profile updated successfully!");
-    } catch (error) {
-      console.error("Submission error:", error);
-      toast.error(error?.message || "An error occurred while updating your profile");
-    } finally {
-      setLoading(false);
+    // Handle avatar
+    if (data.avatar instanceof File) {
+      formData.append("avatar", data.avatar);
+      formData.append("avatarChanged", "true");
+    } else {
+      formData.append("avatarChanged", "false");
     }
-  };
+
+    // Prepare addresses
+    const primaryAddress = {
+      ...data.addresses[data.primaryAddressIndex],
+      isPrimary: true
+    };
+    formData.append("primaryRawAddress", JSON.stringify(primaryAddress));
+
+    if (data.addresses.length > 1) {
+      const secondaryIndex = 1 - data.primaryAddressIndex;
+      const secondaryAddress = {
+        ...data.addresses[secondaryIndex],
+        isPrimary: false
+      };
+      formData.append("secondaryRawAddress", JSON.stringify(secondaryAddress));
+    }
+
+    const res = await fetch("/api/user", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    
+    toast.success("Profile updated successfully!");
+  } catch (error) {
+    toast.error(error?.message || "Update failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -147,13 +149,14 @@ export default function ProfilePage() {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) { // 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      // 2MB
       toast.error("Image size should be less than 2MB");
       return;
     }
 
     setValue("avatar", file, { shouldDirty: true });
-    
+
     const reader = new FileReader();
     reader.onloadend = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -167,7 +170,13 @@ export default function ProfilePage() {
 
   const addAddress = () => {
     if (addresses.length < 2) {
-      append({ street: "", city: "", country: "", postalCode: "" });
+      append({
+        street: "",
+        city: "",
+        country: "",
+        postalCode: "",
+        isPrimary: false,
+      });
     }
   };
 
@@ -248,7 +257,9 @@ export default function ProfilePage() {
             <Label htmlFor="email">Email</Label>
             <Input id="email" {...register("email")} />
             {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              <p className="text-sm text-red-500 mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
         </div>
@@ -301,7 +312,9 @@ export default function ProfilePage() {
                     className="h-4 w-4 text-primary"
                   />
                   <Label htmlFor={`address-${index}`} className="font-medium">
-                    {primaryAddressIndex === index ? "Primary Address" : "Secondary Address"}
+                    {primaryAddressIndex === index
+                      ? "Primary Address"
+                      : "Secondary Address"}
                   </Label>
                 </div>
 

@@ -73,8 +73,8 @@ enum OrderStatus{
 model Address{
   id String @id @default(uuid())
   user User @relation("UserAddresses",fields: [userId],references: [id],onDelete: Cascade)
-  order Order @relation(fields: [orderId],references: [id])
-  orderId String @unique
+  order Order? @relation(fields: [orderId],references: [id])
+  orderId String? @unique
   userId String
   street String
   city String
@@ -127,6 +127,7 @@ model Product{
   description String
   price Decimal
   stock Int
+  discount Decimal
   category Category @relation(fields:[categoryId],references: [id])
   categoryId String
   images Image[] //multiple images

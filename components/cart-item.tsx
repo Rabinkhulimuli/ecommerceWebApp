@@ -29,7 +29,7 @@ export function CartItem({ item }: CartItemProps) {
         <div className="flex items-center space-x-4">
           <div className="relative w-20 h-20 rounded-lg overflow-hidden">
             <Image
-              src={item.image || "/placeholder.svg?height=80&width=80"}
+              src={item.images[0].url || "/placeholder.svg?height=80&width=80"}
               alt={item.name}
               fill
               className="object-cover"

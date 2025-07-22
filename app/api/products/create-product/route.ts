@@ -105,7 +105,7 @@ export async function POST(request: Request) {
             data: successfulUploads.map((upload) => ({
               url: upload.url as string,
               publicId: upload.publicId as string,
-              userId:userId,
+              
             })),
           },
         },

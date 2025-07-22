@@ -7,10 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { ShoppingBag } from "lucide-react"
+import { useGetCartItems } from "@/services/cart.service"
+import { useSession } from "next-auth/react"
 
 export default function CartPage() {
   const { items, total, clearCart } = useCart()
-
+  const {data:session}= useSession()
+  const userId= session?.user.id
+  if(userId){
+    const{cartItems}= useGetCartItems(userId)
+    console.log("cart items-data",cartItems)
+  }
+  
   if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">

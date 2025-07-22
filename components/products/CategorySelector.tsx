@@ -58,7 +58,7 @@ export default function CategorySelector({ value, onChange }: CategorySelectorPr
         </select>
       ) : (
         <p className="text-sm text-red-500">
-          No categories found. <Link href="/create-category" className="underline text-blue-600">Create one</Link>
+          No categories found. <Link href="/admin/create-category" className="underline text-blue-600">Create one</Link>
         </p>
       )}
     </div>

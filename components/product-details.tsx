@@ -29,7 +29,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     })
   }
 
-  const images = [product.image, product.image, product.image] // Mock multiple images
 
   return (
     <div className="grid lg:grid-cols-2 gap-12">
@@ -45,7 +44,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           />
         </div>
         <div className="flex space-x-2">
-          {images.map((image, index) => (
+          {product.images.map((image, index) => (
             <button
               key={index}
               onClick={() => setSelectedImage(index)}
@@ -54,7 +53,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               }`}
             >
               <Image
-                src={image || "/placeholder.svg?height=80&width=80"}
+                src={image.url || "/placeholder.svg?height=80&width=80"}
                 alt={`${product.name} ${index + 1}`}
                 fill
                 className="object-cover"
@@ -69,7 +68,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <Badge variant="secondary">{product.category}</Badge>
-            <Badge variant="outline">{product.brand}</Badge>
+            <Badge variant="outline">{(product?.brand)?product.brand:"no brand"}</Badge>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
 
