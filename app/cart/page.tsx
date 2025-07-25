@@ -9,17 +9,23 @@ import Link from "next/link"
 import { ShoppingBag } from "lucide-react"
 import { useGetCartItems } from "@/services/cart.service"
 import { useSession } from "next-auth/react"
+import { CartItemResponsetype } from "@/lib/types"
+import { useEffect, useState } from "react"
 
 export default function CartPage() {
-  const { items, total, clearCart } = useCart()
+  const {  total, clearCart } = useCart()
+  const [items,setItems]= useState<CartItemResponsetype>()
   const {data:session}= useSession()
   const userId= session?.user.id
-  if(userId){
-    const{cartItems}= useGetCartItems(userId)
-    console.log("cart items-data",cartItems)
-  }
+  const {cartItems,isLoading}=useGetCartItems(userId||"")
+  useEffect(()=> {
+    if(!userId) return 
+    if(!cartItems) return 
+    setItems(cartItems)
+  },[cartItems])
+ if(isLoading) return <div>loading...</div>
   
-  if (items.length === 0) {
+  if (!items||items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <ShoppingBag className="h-24 w-24 mx-auto text-gray-400 mb-6" />
@@ -31,7 +37,7 @@ export default function CartPage() {
       </div>
     )
   }
-
+const calculatedTotal= items.reduce((acc,item)=> acc+item.product.price *item.quantity,0)
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
@@ -60,7 +66,7 @@ export default function CartPage() {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>${calculatedTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -68,12 +74,12 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${(total * 0.08).toFixed(2)}</span>
+                <span>${(calculatedTotal * 0.08).toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${(total * 1.08).toFixed(2)}</span>
+                <span>${(calculatedTotal * 1.08).toFixed(2)}</span>
               </div>
               <Link href="/checkout" className="w-full">
                 <Button className="w-full" size="lg">

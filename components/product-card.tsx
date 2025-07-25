@@ -9,17 +9,33 @@ import { ShoppingCart, Heart } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/lib/types";
+import { useAddToCart } from "@/services/cart.service";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
+  const [errors,setErrors]= useState("")
+  const{addItem}= useCart()
   const { toast } = useToast();
-
+  const {data:session}= useSession()
+  const userId= session?.user.id
+  const {addCartItem,isLoading,error}= useAddToCart()
+  console.log(error)
   const handleAddToCart = () => {
-    addItem(product);
+    if(!userId) {
+      toast({
+        title:"Error",
+        description:"You must login first",
+        variant:"destructive"
+      })
+      return
+    }
+    addItem(product)
+    addCartItem({userId:userId,productId:product.id})
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -88,10 +104,10 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button
           onClick={handleAddToCart}
           className="w-full group"
-          disabled={product.stock > 1}
+          disabled={product.stock < 1}
         >
           <ShoppingCart className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-          {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+          {product.stock > 0 ? isLoading?"Adding...": "Add to Cart" : "Out of Stock"}
         </Button>
       </CardFooter>
     </Card>

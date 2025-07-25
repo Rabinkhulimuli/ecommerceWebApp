@@ -1,9 +1,9 @@
 import { useToast } from "@/hooks/use-toast";
-import { CartItemResponsetype } from "@/lib/types";
+import { cartItemRersponse, CartItemResponsetype, UpdateCartParams } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useGetCartItems = (userId: string) => {
-  const getCartItem = async (): Promise<CartItemResponsetype[]> => {
+  const getCartItem = async (): Promise<CartItemResponsetype> => {
     const res = await fetch(`/api/cart/view-cart?userId=${userId}`, {
       method: "GET",
     });
@@ -53,7 +53,7 @@ export const useAddToCart = () => {
     return res.json();
   };
 
-  const { mutate: addCartItem, isPending: isLoading } = useMutation({
+  const { mutate: addCartItem, isPending: isLoading ,error} = useMutation({
     mutationFn: addToCart,
     mutationKey: ["addToCart"],
     onSuccess: () => {
@@ -65,7 +65,7 @@ export const useAddToCart = () => {
     },
   });
 
-  return { addCartItem, isLoading };
+  return { addCartItem, isLoading ,error};
 };
 
 export const useRemoveFromCart = () => {
@@ -141,4 +141,29 @@ export const useClearCart = () => {
   return { clearCartItems, isLoading };
 };
 
-
+export const useUpdateCart= ()=> {
+    const queryClient = useQueryClient();
+  const updateCart = async(params:UpdateCartParams):Promise<Partial<CartItemResponsetype[0]>>=> {
+    const updateCartItem= await fetch("/api/cart/update",{
+      method:"POST",
+      body:JSON.stringify({userId:params.userId,
+        productId:params.productId,
+        quantity:params.quantity
+      })
+    })
+    const data = await updateCartItem.json()
+    return data.data
+  }
+  const {mutate:updateCartItem,isPending:isLoading,error}= useMutation({
+    mutationFn:updateCart,
+    mutationKey:["updateCart"],
+    onSuccess:()=> {
+      queryClient.invalidateQueries({queryKey:["getcart"]})
+    }
+  })
+  return {
+    updateCartItem,
+    isLoading,
+    error
+  }
+}

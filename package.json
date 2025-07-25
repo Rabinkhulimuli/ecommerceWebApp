@@ -81,5 +81,21 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.3",
     "typescript": "^5"
-  }
+  },
+  "description": "��#\u0000 \u0000e\u0000c\u0000o\u0000m\u0000m\u0000e\u0000r\u0000c\u0000e\u0000W\u0000e\u0000b\u0000A\u0000p\u0000p\u0000\r\u0000 \u0000",
+  "main": "postcss.config.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rabinkhulimuli/ecommerceWebApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rabinkhulimuli/ecommerceWebApp/issues"
+  },
+  "homepage": "https://github.com/Rabinkhulimuli/ecommerceWebApp#readme"
 }

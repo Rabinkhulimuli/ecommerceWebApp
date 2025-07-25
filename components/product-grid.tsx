@@ -1,9 +1,12 @@
-import { getProducts } from "@/lib/products"
+"use client"
 import { ProductCard } from "@/components/product-card"
+import { useGetAllProduct } from "@/services/product.service"
 
 export async function ProductGrid() {
   
-  const products = await getProducts()
+  const {getAllProductData:products,isLoading}= useGetAllProduct()
+  if(isLoading)
+    return <div>loading...</div>
   if(!products){
     return <div>product list is empty</div>
   }

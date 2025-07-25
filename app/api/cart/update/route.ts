@@ -8,7 +8,7 @@ const updateCartSchema = z.object({
   quantity: z.number().min(1),
 });
 
-export async function PUT(request: Request) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
 
@@ -46,7 +46,15 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json(
-      { message: "Cart updated successfully", data: updatedCartItem },
+      {
+        message: "Cart updated successfully",
+        data: {
+          id: updatedCartItem.id,
+          quantity: updatedCartItem.quantity,
+          userId: updatedCartItem.userId,
+          product: { id: updatedCartItem.productId },
+        },
+      },
       { status: 200 }
     );
   } catch (err) {

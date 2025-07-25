@@ -5,21 +5,24 @@ import prisma from "@/lib/prisma";
 import { DefaultSession, getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-declare module "next-auth"{
-  interface Session{
-    user:{
-    id:string
-    } & DefaultSession["user"]
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session= await getServerSession(authOptions)
-    const userId= session?.user.id
+    const session = await getServerSession(authOptions);
+    const userId = session?.user.id;
     const formData = await request.formData();
-    if(!userId){
-      return NextResponse.json({error:"user mut sign in first "},{status:400})
+    if (!userId) {
+      return NextResponse.json(
+        { error: "user mut sign in first " },
+        { status: 400 }
+      );
     }
     // Extract product data
     const productData = {
@@ -28,8 +31,9 @@ export async function POST(request: Request) {
       price: Number(formData.get("price")) || 0,
       description: formData.get("description")?.toString() || "",
       stock: Number(formData.get("stock")) || 0,
+      discount: Number(formData.get("discount") || 0),
     };
-    console.log("product data",productData)
+    console.log("product data", productData);
     const category = await prisma.category.findUnique({
       where: { id: productData.categoryId },
     });
@@ -89,9 +93,9 @@ export async function POST(request: Request) {
       );
     }
     console.log("Final product payload", {
-  ...productData,
-  images: successfulUploads
-});
+      ...productData,
+      images: successfulUploads,
+    });
     // Create product in database using Prisma
     const createdProduct = await prisma.product.create({
       data: {
@@ -100,12 +104,13 @@ export async function POST(request: Request) {
         price: productData.price,
         stock: productData.stock,
         categoryId: productData.categoryId,
+
+        discount: productData.discount,
         images: {
           createMany: {
             data: successfulUploads.map((upload) => ({
               url: upload.url as string,
               publicId: upload.publicId as string,
-              
             })),
           },
         },

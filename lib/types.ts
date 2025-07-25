@@ -22,6 +22,7 @@ export type CartItemResponsetype = {
     name: string;
     price: number;
     discount: number;
+    description:string;
     images: {
       id: string;
       url: string;
@@ -31,7 +32,11 @@ export type CartItemResponsetype = {
     category: string;
   };
 }[];
-
+export type UpdateCartParams = {
+  userId: string;
+  productId: string;
+  quantity: number;
+};
 export interface  CartItemProps {
   product:Product;
   quantity:number
