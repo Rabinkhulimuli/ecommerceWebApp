@@ -1,27 +1,58 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Slider } from "@/components/ui/slider"
-import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+export const categories = [
+  "Electronics",
+  "Audio",
+  "Wearable",
+  "Photography",
+  "Gaming",
+  "Home & Decor",
+];
 
-const categories = ["Electronics", "Audio", "Wearables", "Photography", "Gaming", "Home & Garden"]
+type filterProps={
+  price:number[],
+  setPrice:React.Dispatch<React.SetStateAction<number[]>>,
+  categorys:string[],
+  setCategories: React.Dispatch<React.SetStateAction<string[]>>,
+  handleFilterChange:()=> void,
+  isLoading:boolean
+}
+/* const brands = ["Apple", "Samsung", "Sony", "Nike", "Adidas", "Canon"]
+ */
+export function ProductFilters({price,setPrice,categorys,setCategories,handleFilterChange,isLoading}:filterProps) {
 
-const brands = ["Apple", "Samsung", "Sony", "Nike", "Adidas", "Canon"]
+  const handleSliderChange = (value: number[]) => {
+    setPrice(value);
+  };
+  const handleChecked = (category: string, checked: boolean) => {
+    setCategories((prev) =>
+      checked ? [...prev, category] : prev.filter((item) => item !== category)
+    );
+  };
 
-export function ProductFilters() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <Card>
         <CardHeader>
           <CardTitle>Price Range</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Slider defaultValue={[0, 1000]} max={1000} step={10} className="w-full" />
+            <Slider
+              defaultValue={[0, 5000]}
+              max={5000}
+              step={10}
+              value={price}
+              onValueChange={handleSliderChange}
+              className="w-full"
+            />
             <div className="flex justify-between text-sm text-gray-600">
-              <span>$0</span>
-              <span>$1000+</span>
+              <span>${price[0]}</span>
+              <span>${price[1]}+</span>
             </div>
           </div>
         </CardContent>
@@ -35,7 +66,13 @@ export function ProductFilters() {
           <div className="space-y-3">
             {categories.map((category) => (
               <div key={category} className="flex items-center space-x-2">
-                <Checkbox id={category} />
+                <Checkbox
+                  id={category}
+                  checked={categorys.includes(category)}
+                  onCheckedChange={(checked) =>
+                    handleChecked(category, checked === true)
+                  }
+                />
                 <Label htmlFor={category} className="text-sm font-normal">
                   {category}
                 </Label>
@@ -45,7 +82,18 @@ export function ProductFilters() {
         </CardContent>
       </Card>
 
-      <Card>
+      {(price[0] !== 0 || price[1] !== 5000 || categorys.length > 0) && (
+        <div className="absolute top-1 right-4">
+          <button
+            disabled={isLoading}
+            onClick={handleFilterChange}
+            className="border-1 px-2 py-1 bg-orange-300 rounded-md hover:scale-105 hover:text-blue-500"
+          >
+            {isLoading ? "Applying changes" : "Apply changes"}
+          </button>
+        </div>
+      )}
+      {/*  <Card>
         <CardHeader>
           <CardTitle>Brands</CardTitle>
         </CardHeader>
@@ -61,7 +109,7 @@ export function ProductFilters() {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
-  )
+  );
 }

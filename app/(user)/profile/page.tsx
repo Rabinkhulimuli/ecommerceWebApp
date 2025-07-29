@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const addressSchema = z.object({
   street: z.string().min(3, "Street must be at least 3 characters").optional(),
@@ -38,6 +38,7 @@ export default function ProfilePage() {
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const {toast}= useToast()
   const {
     register,
     control,
@@ -53,7 +54,7 @@ export default function ProfilePage() {
       name: "",
       email: "",
       avatar: null,
-      addresses: [{ street: "", city: "", country: "", postalCode: "" }],
+      addresses:  [{ street: "", city: "", country: "", postalCode: "" }],
       primaryAddressIndex: 0,
     },
   });
@@ -78,9 +79,7 @@ export default function ProfilePage() {
             name: data.name || "",
             email: data.email || "",
             avatar: null,
-            addresses: data.addresses?.length
-              ? data.addresses.slice(0, 2)
-              : [{ street: "", city: "", country: "", postalCode: "" }],
+            addresses:  [{ street: data.addresses[0]?.street || "", city: data.addresses[0]?.city || "", country: data.addresses[0]?.country || "", postalCode: data.addresses[0]?.postalCode || "" }],
             primaryAddressIndex: data.primaryAddressIndex || 0,
           });
           if (data.image) setPreview(data.image);
@@ -130,10 +129,16 @@ export default function ProfilePage() {
     });
 
     if (!res.ok) throw new Error(await res.text());
-    
-    toast.success("Profile updated successfully!");
+    toast({title:"Profile updated successfully",
+      description:"your profile has been updated successfully",
+      variant:"default",
+    })
   } catch (error) {
-    toast.error(error?.message || "Update failed");
+    toast({
+      title:"Error updating profile",
+      description:"An error occurred while updating your profile. Please try again later.",
+      variant:"destructive",
+    })
   } finally {
     setLoading(false);
   }
@@ -145,13 +150,21 @@ export default function ProfilePage() {
 
     // Validate file type and size
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a valid image file.",
+        variant: "destructive",
+      })
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
       // 2MB
-      toast.error("Image size should be less than 2MB");
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 2MB.",
+        variant: "destructive",
+      })
       return;
     }
 

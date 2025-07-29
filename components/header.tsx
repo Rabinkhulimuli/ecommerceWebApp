@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, User, Search, Menu, X, Divide } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,17 +17,31 @@ import {
 import AdminComponent from "./admin/AdminComponent";
 import {useSession,signOut} from "next-auth/react"
 import Image from "next/image";
+import { sessionUsertype } from "@/lib/types";
+import { useGetCartItems } from "@/services/cart.service";
+
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { items } = useCart();
+
   const {data,status}= useSession()
+  const[user,setUser]= useState<sessionUsertype>(null)
+  
+  
+  const{cartItems,isLoading}= useGetCartItems(user?.id??"")
+  useEffect(()=> {
+      const user= data?.user
+    if(!user) return
+    setUser(user)
+  },[data])
 
-  const user= data?.user
-  const image= data?.user.image
-  console.log("user image",image)
- console.log("header user",user)
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
+const itemCounts= useCallback(()=> {
+  if(cartItems){
+     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    return itemCount
+  }
+   return null
+},[cartItems])
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4">
@@ -83,9 +97,9 @@ export function Header() {
             <Link href="/cart" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
-                {itemCount > 0 && (
+                {itemCounts()!==null && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                    {itemCount}
+                    {itemCounts()}
                   </Badge>
                 )}
               </Button>
@@ -96,7 +110,7 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className=" relative rounded-full w-10 h-10">
-                    {image?<Image src={image} className=" rounded-full object-cover  object-top" alt="profile image" sizes="25px" fill />:
+                    {user.image?<Image src={user.image} className=" rounded-full object-cover  object-top" alt="profile image" sizes="25px" fill />:
                     <User className="h-5 w-5" />}
                   </Button>
                 </DropdownMenuTrigger>

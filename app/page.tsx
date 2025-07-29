@@ -1,11 +1,14 @@
+"use client"
 import { Suspense } from "react"
 import { ProductGrid } from "@/components/product-grid"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedCategories } from "@/components/featured-categories"
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
 import DropdownCreateProduct from "@/components/admin/DropdownCreateProduct"
+import { useGetAllProduct } from "@/services/product.service"
 
 export default function HomePage() {
+  const { isLoading,getAllProductData: products } = useGetAllProduct()
   return (
     <div className="min-h-screen">
       <HeroSection />
@@ -18,7 +21,7 @@ export default function HomePage() {
           </p>
         </div>
         <Suspense fallback={<ProductGridSkeleton />}>
-          <ProductGrid />
+          {products? <ProductGrid products={products} isLoading={isLoading} />:<div className="text-center text-gray-500">No products available</div> }
         </Suspense>
       </section>
     </div>

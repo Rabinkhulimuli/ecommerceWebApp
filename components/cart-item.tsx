@@ -82,7 +82,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
             >
               <Minus className="h-4 w-4" />
             </Button>
-            <div className="w-4">{count > 10 ? count : `0${count}`}</div>
+            <div className="w-4">{count > 9 ? count : `0${count}`}</div>
             <Button
               variant="outline"
               size="icon"

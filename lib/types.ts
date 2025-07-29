@@ -9,7 +9,7 @@ export interface Product {
     publicId: string;
   }[];
   categoryId: string;
-  category?:string;
+  category?: string;
   rating?: number;
   reviews?: number;
   stock: number;
@@ -22,7 +22,7 @@ export type CartItemResponsetype = {
     name: string;
     price: number;
     discount: number;
-    description:string;
+    description: string;
     images: {
       id: string;
       url: string;
@@ -37,20 +37,21 @@ export type UpdateCartParams = {
   productId: string;
   quantity: number;
 };
-export interface  CartItemProps {
-  product:Product;
-  quantity:number
+export interface CartItemProps {
+  product: Product;
+  quantity: number;
 }
-export interface cartItemRersponse{
-  id:String;
-  product:Product
-  quantity:number
+export interface cartItemRersponse {
+  id: String;
+  product: Product;
+  quantity: number;
 }
 export interface User {
   id: string;
   email: string;
   name: string;
   avatar?: string;
+  addresses?: Address[];
 }
 
 export interface Order {
@@ -62,7 +63,17 @@ export interface Order {
   createdAt: Date;
   shippingAddress: Address;
 }
-
+export type filterProductType = {
+  price: number[];
+  category: string[];
+  page: number;
+};
+export type sessionUsertype = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+} | null;
 export interface Address {
   firstName: string;
   lastName: string;
@@ -70,7 +81,29 @@ export interface Address {
   phone?: string;
   address: string;
   city: string;
-  state: string;
-  zipCode: string;
+  street: string;
+  postalCode: string;
   country: string;
 }
+export type getUserResType = {
+  name: string;
+  email: string;
+  image: {
+    id: string;
+    url: string;
+    publicId: string;
+    productId: string | null;
+  } | null;
+  addresses: {
+    id: string;
+    createdAt: Date;
+    orderId: string | null;
+    userId: string;
+    street: string;
+    state: string;
+    country: string;
+    city: string;
+    postalCode: string;
+    isPrimary: boolean
+  }[];
+};

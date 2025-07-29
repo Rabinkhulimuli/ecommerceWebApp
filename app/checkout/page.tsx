@@ -1,17 +1,24 @@
 "use client"
 
 import { useState } from "react"
-import { useCart } from "@/hooks/use-cart"
 import { CheckoutForm } from "@/components/checkout-form"
 import { OrderSummary } from "@/components/order-summary"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Shield, Truck, CreditCard } from "lucide-react"
+import { useGetCartItems } from "@/services/cart.service"
+import { useSession } from "next-auth/react"
 
 export default function CheckoutPage() {
-  const { items, total } = useCart()
-  const [currentStep, setCurrentStep] = useState("shipping")
 
-  if (items.length === 0) {
+  const {data:session}= useSession()
+  const userId= session?.user.id
+  const{cartItems:items,isLoading}= useGetCartItems(userId||"")
+  const [currentStep, setCurrentStep] = useState("shipping")
+  if(isLoading){
+    return <div>Loading...</div>
+  }
+
+  if (!items||items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">No items in cart</h1>
@@ -19,7 +26,7 @@ export default function CheckoutPage() {
       </div>
     )
   }
-
+  const total = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0)
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
@@ -47,17 +54,17 @@ export default function CheckoutPage() {
             </TabsContent>
 
             <TabsContent value="payment" className="mt-6">
-              <CheckoutForm step="payment" onNext={() => setCurrentStep("review")} />
+              <CheckoutForm total={total} step="payment" onNext={() => setCurrentStep("review")} />
             </TabsContent>
 
             <TabsContent value="review" className="mt-6">
-              <CheckoutForm step="review" />
+              <CheckoutForm step="review" total={total} />
             </TabsContent>
           </Tabs>
         </div>
 
         <div className="lg:col-span-1">
-          <OrderSummary />
+          <OrderSummary items={items} total={total} />
         </div>
       </div>
     </div>

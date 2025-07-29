@@ -39,7 +39,7 @@ export async function POST(request: Request) {
           id: existing.id,
         },
         data: {
-          quantity: existing.quantity + quantity,
+          quantity: quantity?existing.quantity + quantity:existing.quantity + 1,
         },
       });
     } else {

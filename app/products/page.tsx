@@ -1,9 +1,9 @@
-import { Suspense } from "react"
-import { ProductGrid } from "@/components/product-grid"
-import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
-import { ProductFilters } from "@/components/product-filters"
+
+import FilterAllProduct from "@/components/products/FilterAllProduct"
 
 export default function ProductsPage() {
+   
+    
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -11,17 +11,7 @@ export default function ProductsPage() {
         <p className="text-gray-600">Discover our complete collection of premium products</p>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-8">
-        <aside className="lg:col-span-1">
-          <ProductFilters />
-        </aside>
-
-        <main className="lg:col-span-3">
-          <Suspense fallback={<ProductGridSkeleton />}>
-            <ProductGrid />
-          </Suspense>
-        </main>
-      </div>
+      <FilterAllProduct/>
     </div>
   )
 }

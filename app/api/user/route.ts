@@ -178,6 +178,9 @@ export async function POST(request: Request) {
           image: true,
         },
       });
+    },{
+      maxWait:20000, // 20 seconds
+      timeout: 10000, // 10 seconds
     });
 
     return NextResponse.json({

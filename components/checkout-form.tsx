@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,19 +12,68 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useCart } from "@/hooks/use-cart"
 import { useToast } from "@/hooks/use-toast"
 import { CreditCard, Truck, Package } from "lucide-react"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { Address } from "@/lib/types"
+import { useGetUser } from "@/services/user.service"
+import FormSkeleton from "./checkout/UserForm"
+import Esewa from "./esewa/Esewa"
 
 interface CheckoutFormProps {
   step: "shipping" | "payment" | "review"
   onNext?: () => void
+  total?:number
 }
 
-export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
+export function CheckoutForm({ step, onNext ,total}: CheckoutFormProps) {
   const { clearCart } = useCart()
   const { toast } = useToast()
+  
   const [isProcessing, setIsProcessing] = useState(false)
+  const {userData,isLoading}= useGetUser()
+  
+  const {handleSubmit,formState:{errors},register,setValue}= useForm<Address>({
+    defaultValues: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    postalCode: "",
+    country: "",
+    street: "",
+    city: "",
+  }
+  })
+  
+ /*  useEffect(()=> {
+      if (userData) {
+    const nameSplit = userData.name?.split(" ") ?? []
+    reset({
+      firstName: nameSplit[0] || "",
+      lastName: nameSplit[1] || "",
+      email: userData.email || "",
+      phone: "",
+      postalCode: userData.addresses?.[0]?.postalCode || "",
+      country: userData.addresses?.[0]?.country || "",
+      street: userData.addresses?.[0]?.street || "",
+      city: userData.addresses?.[0]?.city || "",
+    })
+  }
+  },[userData,reset,isLoading]) */
+  useEffect(() => {
+  if (userData) {
+    const nameSplit = userData.name?.split(" ") ?? []
+    setValue("firstName", nameSplit[0] || "")
+    setValue("lastName", nameSplit[1] || "")
+    setValue("email", userData.email || "")
+    setValue("postalCode", userData.addresses?.[0]?.postalCode || "")
+    setValue("country", userData.addresses?.[0]?.country || "")
+    setValue("street", userData.addresses?.[0]?.street || "")
+    setValue("city", userData.addresses?.[0]?.city || "")
+  }
+}, [userData, setValue])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit:SubmitHandler<Address> = async (data) => {
+   
 
     if (step === "review") {
       setIsProcessing(true)
@@ -39,7 +88,7 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
       clearCart()
       setIsProcessing(false)
       // Redirect to success page
-      window.location.href = "/order-success"
+      window.location.href = `/order-success?price=${total}`
     } else {
       onNext?.()
     }
@@ -55,40 +104,40 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {isLoading? <FormSkeleton/>: <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" required />
+                <Input id="firstName" required {...register("firstName")}  />
               </div>
               <div>
                 <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" required />
+                <Input id="lastName" required {...register("lastName")}/>
               </div>
             </div>
 
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required />
+              <Input id="email" type="email" required {...register("email")} />
             </div>
 
             <div>
               <Label htmlFor="address">Address</Label>
-              <Input id="address" required />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 text-capitalize">
               <div>
                 <Label htmlFor="city">City</Label>
-                <Input id="city" required />
+                <Input className="text-capitalize"  id="city" required {...register("city")} />
               </div>
               <div>
-                <Label htmlFor="state">State</Label>
-                <Input id="state" required />
+                <Label htmlFor="street">Street</Label>
+                <Input id="street" required {...register("street")} />
               </div>
               <div>
-                <Label htmlFor="zip">ZIP Code</Label>
-                <Input id="zip" required />
+                <Label htmlFor="postalCode">Postal Code</Label>
+                <Input id="postalCode" required {...register("postalCode")} />
               </div>
             </div>
 
@@ -100,14 +149,15 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
             <Button type="submit" className="w-full">
               Continue to Payment
             </Button>
-          </form>
+          </form>}
         </CardContent>
       </Card>
     )
   }
 
   if (step === "payment") {
-    return (
+    return <Esewa total_amount={total??0}/>
+   /*  return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -116,7 +166,7 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <RadioGroup defaultValue="card">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="card" id="card" />
@@ -164,7 +214,7 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
           </form>
         </CardContent>
       </Card>
-    )
+    ) */
   }
 
   return (
@@ -179,17 +229,17 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
         <div className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2">Shipping Address</h3>
-            <div className="text-sm text-gray-600">
-              <p>John Doe</p>
-              <p>123 Main Street</p>
-              <p>New York, NY 10001</p>
+            <div className="text-sm text-gray-600 capitalize">
+              <p>{userData?.name||"John Doe"} </p>
+              <p>{userData?.addresses[0].street||"123 Main"} Street</p>
+              <p>{userData?.addresses[0].city||"New York"}, {userData?.addresses[0].street||""} {userData?.addresses[0].postalCode||""}</p>
             </div>
           </div>
 
           <div>
             <h3 className="font-semibold mb-2">Payment Method</h3>
             <div className="text-sm text-gray-600">
-              <p>Credit Card ending in 3456</p>
+              <p> e-sewa</p>
             </div>
           </div>
 
@@ -211,9 +261,13 @@ export function CheckoutForm({ step, onNext }: CheckoutFormProps) {
                 <span className="text-sm">$9.99</span>
               </div>
             </RadioGroup>
+            <div className="flex justify-between mt-4">
+              <span className="text-sm">Total:</span>
+              <span className="font-semibold text-lg">{total} </span>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Button type="submit" className="w-full" size="lg" disabled={isProcessing}>
               {isProcessing ? "Processing..." : "Place Order"}
             </Button>

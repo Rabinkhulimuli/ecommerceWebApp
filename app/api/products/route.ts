@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { getProducts } from "@/lib/products"
 import prisma from "@/lib/prisma"
 
 export async function GET() {
@@ -10,7 +9,6 @@ export async function GET() {
         category:true
       }
     })
-    console.log("products",products)
     return NextResponse.json(products)
   } catch (error) {
     console.error("Error fetching products:", error)
