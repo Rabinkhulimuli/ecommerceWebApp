@@ -6,7 +6,6 @@ import { ShoppingCart, User, Search, Menu, X, Divide } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useCart } from "@/hooks/use-cart";
 import { VscLoading } from "react-icons/vsc";
 import {
   DropdownMenu,
@@ -26,7 +25,6 @@ export function Header() {
   const {data,status}= useSession()
   const[user,setUser]= useState<sessionUsertype>(null)
   
-  
   const{cartItems,isLoading}= useGetCartItems(user?.id??"")
   useEffect(()=> {
       const user= data?.user
@@ -34,7 +32,9 @@ export function Header() {
     setUser(user)
   },[data])
 
-
+const handleMenuOpen=()=> {
+  setIsMenuOpen(!isMenuOpen)
+}
 const itemCounts= useCallback(()=> {
   if(cartItems){
      const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -80,7 +80,7 @@ const itemCounts= useCallback(()=> {
             >
               Contact
             </Link>
-            <AdminComponent/>
+            {user?.role==="ADMIN"&& <AdminComponent/>}
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -138,7 +138,7 @@ const itemCounts= useCallback(()=> {
               variant="ghost"
               size="icon"
               className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={handleMenuOpen}
             >
               {isMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -152,24 +152,27 @@ const itemCounts= useCallback(()=> {
         {isMenuOpen && (
           <div className="md:hidden border-t py-4">
             <nav className="flex flex-col space-y-4">
-              <AdminComponent/>
+              {user?.role==="ADMIN"&&<AdminComponent/>}
               <Link
                 href="/products"
+                onClick={handleMenuOpen}
                 className="text-gray-700 hover:text-blue-600"
               >
                 Products
               </Link>
               <Link
                 href="/categories"
+                onClick={handleMenuOpen}
                 className="text-gray-700 hover:text-blue-600"
               >
                 Categories
               </Link>
-              <Link href="/about" className="text-gray-700 hover:text-blue-600">
+              <Link onClick={handleMenuOpen} href="/about" className="text-gray-700 hover:text-blue-600">
                 About
               </Link>
               <Link
                 href="/contact"
+                onClick={handleMenuOpen}
                 className="text-gray-700 hover:text-blue-600"
               >
                 Contact

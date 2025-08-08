@@ -1,25 +1,39 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+const adminRoutes = ['/admin', '/admin/create-category', '/admin/create-product'];
+const authRoutes = ['/profile', '/checkout', '/orders'];
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
 
-  const isProtectedRoute = req.nextUrl.pathname.startsWith("/dashboard");
+  // Get the session token (automatically decrypts)
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-  if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+ 
+
+  const isAdminRoute = adminRoutes.includes(pathname);
+  const isAuthRoute = authRoutes.includes(pathname);
+
+  // If not authenticated and accessing protected route
+  if (!token && (isAdminRoute || isAuthRoute)) {
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url));
+  }
+
+  // If accessing admin route and user is not admin
+  if (token && isAdminRoute && token.role !== 'admin') {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*",
-    "/admin/:path"
-  ], 
+  matcher: [
+    '/admin/:path*',
+    '/profile',
+    '/checkout',
+    '/orders',
+  ],
 };

@@ -5,13 +5,7 @@ import prisma from "@/lib/prisma";
 import { DefaultSession, getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
-  }
-}
+
 
 export async function POST(request: Request) {
   try {

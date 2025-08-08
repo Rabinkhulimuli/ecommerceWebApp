@@ -26,14 +26,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Password is empty");
 
         const isValid = await compare(credentials.password, user.password);
-        if (!isValid) throw new Error("Invalid password");
+        if (!isValid) throw new Error("Invalid password"); 
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image:user.image?.url,
-          role: user?.role,
+          role: user.role,
         };
       },
     }),
@@ -47,21 +47,33 @@ export const authOptions: NextAuthOptions = {
       user,
     }: {
       token: JWT;
-      user?: User;
+      user?: User & { role?: string };
     }): Promise<JWT> {
-      if (user) token.user = user;
+      if (user) {token.user = user;
+        token.role= user.role;
+        token.id=user.id;
+      }
+      console.log("JWT callback → token.role:", token.role);
+      console.log("JWT callback → user.id:", user?.id);
+
       return token;
     },
 
     async session({
       session,
-      token,
+      token
     }: {
       session: Session;
       token: JWT;
     }): Promise<Session> {
-      session.user = token.user as User;
-      return session;
+       session.user = {
+      ...session.user,
+      role: token.role,
+      id:token?.id!
+    };
+  
+
+    return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

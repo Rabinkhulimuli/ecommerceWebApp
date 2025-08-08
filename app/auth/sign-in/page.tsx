@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -70,10 +70,12 @@ export default function SignIn() {
       });
     }
   };
-  if(data&&data.user){
+ useEffect(()=> {
+   if(data&&data.user){
 
     return router.push("/")
   }
+ },[data,router])
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">

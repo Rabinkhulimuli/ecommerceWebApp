@@ -1,42 +1,87 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-export async function POST(request:Request){
-    try{
-        const {price,category,page=1}= await request.json()
-        if(!price||!Array.isArray(price||price.length !==2)){
-            return NextResponse.json({
-                error:"invalid price range"
-            },{status:400})
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    // Get query parameters
+    const minPrice = Number(searchParams.get("minPrice")) || 0;
+    const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
+    const categoryName = searchParams.get("category");
+    const page = Number(searchParams.get("page")) || 1;
+    const PAGE_SIZE = 10;
+    const skip = (page - 1) * PAGE_SIZE;
+
+    // Build the where clause
+    const where: any = {
+      price: {
+        gte: minPrice,
+        lte: maxPrice,
+      },
+    };
+
+    // Add category filter if provided
+    if (categoryName) {
+      const category = await prisma.category.findFirst({
+        where: {
+          name: {
+            equals: categoryName,
+            mode: 'insensitive' // case-insensitive search
+          }
         }
-        const [minPrice,maxPrice]= price
-        const PAGE_SIZE=10
-        const skip=(page-1)*PAGE_SIZE
-        const products= await prisma?.product.findMany({
-            where:{
-                price:{
-                    gte:minPrice,
-                    lte:Number(maxPrice)===5000?undefined:Number(maxPrice)
-                },
-                category:category.length>0?{
-                    name:{
-                        in:category
-                    }
-                }:undefined   
+      });
+
+      if (category) {
+        where.categoryId = category.id;
+      } else {
+        // Return empty result if category doesn't exist
+        return NextResponse.json(
+          {
+            data: [],
+            meta: {
+              page,
+              pageSize: PAGE_SIZE,
+              total: 0,
+              totalPages: 0,
             },
-            include:{
-                images:true,
-                category:true
-            },
-            take:PAGE_SIZE,
-            skip:skip
-        })
-        return NextResponse.json({data:products},{status:200})
-        
-    }catch(err){
-         console.error("Error filtering products:", err);
+          },
+          { status: 200 }
+        );
+      }
+    }
+
+    // Fetch products and total count
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: {
+          images: true,
+          category: true,
+        },
+        take: PAGE_SIZE,
+        skip,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return NextResponse.json(
+      {
+        data: products,
+        meta: {
+          page,
+          pageSize: PAGE_SIZE,
+          total,
+          totalPages: Math.ceil(total / PAGE_SIZE),
+        },
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Error filtering products:", err);
     return NextResponse.json(
       { error: "Failed to filter products" },
       { status: 500 }
     );
-    }
+  }
 }

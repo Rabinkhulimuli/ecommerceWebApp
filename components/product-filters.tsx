@@ -1,4 +1,3 @@
-"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,7 +14,7 @@ export const categories = [
 
 type filterProps={
   price:number[],
-  setPrice:React.Dispatch<React.SetStateAction<number[]>>,
+  setPrice:React.Dispatch<React.SetStateAction<[number,number]>>,
   categorys:string[],
   setCategories: React.Dispatch<React.SetStateAction<string[]>>,
   handleFilterChange:()=> void,
@@ -25,7 +24,7 @@ type filterProps={
  */
 export function ProductFilters({price,setPrice,categorys,setCategories,handleFilterChange,isLoading}:filterProps) {
 
-  const handleSliderChange = (value: number[]) => {
+  const handleSliderChange = (value: [number,number]) => {
     setPrice(value);
   };
   const handleChecked = (category: string, checked: boolean) => {

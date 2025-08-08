@@ -4,11 +4,10 @@ import { ProductGrid } from "@/components/product-grid"
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedCategories } from "@/components/featured-categories"
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton"
-import DropdownCreateProduct from "@/components/admin/DropdownCreateProduct"
-import { useGetAllProduct } from "@/services/product.service"
+import { useProducts } from "@/services/hooks/UseProduct"
 
 export default function HomePage() {
-  const { isLoading,getAllProductData: products } = useGetAllProduct()
+  const { isLoading,data: products=[] } = useProducts()
   return (
     <div className="min-h-screen">
       <HeroSection />

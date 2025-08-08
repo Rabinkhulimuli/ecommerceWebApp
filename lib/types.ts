@@ -64,15 +64,16 @@ export interface Order {
   shippingAddress: Address;
 }
 export type filterProductType = {
-  price: number[];
-  category: string[];
-  page: number;
+  price?: number[];
+  category?: string[];
+  page?: number;
 };
 export type sessionUsertype = {
   id: string;
   name?: string | null;
   email?: string | null;
   image?: string | null;
+  role?:string;
 } | null;
 export interface Address {
   firstName: string;

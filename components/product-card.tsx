@@ -11,20 +11,17 @@ import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/lib/types";
 import { useAddToCart } from "@/services/cart.service";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [errors,setErrors]= useState("")
   const{addItem}= useCart()
   const { toast } = useToast();
   const {data:session}= useSession()
   const userId= session?.user.id
   const {addCartItem,isLoading,error}= useAddToCart()
-  console.log(error)
   const handleAddToCart = () => {
     if(!userId) {
       toast({

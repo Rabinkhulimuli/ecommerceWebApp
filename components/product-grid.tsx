@@ -1,15 +1,17 @@
-"use client"
+
 import { ProductCard } from "@/components/product-card"
 import { Product } from "@/lib/types"
 import { ProductGridSkeleton } from "./product-grid-skeleton"
 
-export async function ProductGrid({products,isLoading}:{products:Product[],isLoading:boolean}) {
+export function ProductGrid({products,isLoading}:{products:Product[],isLoading:boolean}) {
  if(isLoading){
   return <ProductGridSkeleton/>
  }
   if(!products){
     return <div>No product found</div>
   }
+  console.log(products, Array.isArray(products));
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product) => (

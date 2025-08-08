@@ -1,70 +1,69 @@
 "use client";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ProductFilters } from "../product-filters";
-import { ProductGridSkeleton } from "../product-grid-skeleton";
 import { ProductGrid } from "../product-grid";
-import {
-  useFilterAllProduct,
-  useGetAllProduct,
-} from "@/services/product.service";
-import { Product } from "@/lib/types";
+import { useProducts } from "@/services/hooks/UseProduct";
 
-export default function FilterAllProduct() {
-  const [allProduct, setAllProduct] = useState<Product[]>([]);
-  const [price, setPrice] = useState([0, 5000]);
+export default function FilterAllProduct({category}:{category?:string}) {
+  const [price, setPrice] = useState<[number, number]>([0, 5000]);
   const [page, setPage] = useState(1);
-  const [categorys, setCategories] = useState<string[]>([]);
-  const { filterProducts, isLoading: isLoadingfilter } = useFilterAllProduct();
-  const { getAllProductData: products, isLoading } = useGetAllProduct();
-  useEffect(() => {
-    if (products) setAllProduct(products);
-  }, [products]);
-  if (!allProduct) {
-    return <div>product list is empty</div>;
-  }
-  const handleFilterChange = async () => {
-    try {
-      const productData = await filterProducts({ price, category: categorys,page });
-      setAllProduct(productData);
-    } catch (err) {
-      console.error("Error filtering products", err);
-    }
+  const [categories, setCategories] = useState<string[]>([]);
+  
+  const { data: products = [], isLoading, isFetching } = useProducts({
+    price,
+    page,
+    category:category?[category]:categories
+  });
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setPage(1);
   };
+
+  const handleFilterChange = () => {
+    setPage(1); 
+  };
+
+  const isDisabled = isLoading || isFetching;
+
+  if (isLoading) {
+    return <div>Loading products...</div>;
+  }
+
   return (
     <div>
       <div className="grid lg:grid-cols-4 gap-8">
-        <aside className="lg:col-span-1">
+       <aside className="lg:col-span-1">
           <ProductFilters
             price={price}
             setPrice={setPrice}
-            categorys={categorys}
+            categorys={categories}
             setCategories={setCategories}
             handleFilterChange={handleFilterChange}
-            isLoading={isLoadingfilter}
+            isLoading={isDisabled}
           />
-        </aside>
+        </aside> 
 
         <main className="lg:col-span-3">
-          <Suspense fallback={<ProductGridSkeleton />}>
-            <ProductGrid products={allProduct} isLoading={isLoading} />
-          </Suspense>
+          {products.length === 0 ? (
+            <div>No products found</div>
+          ) : (
+            <> <ProductGrid products={products} isLoading={isDisabled} /></>
+          )}
+          {/* */}
         </main>
+
         <div className="flex gap-4 mt-6">
           <button
-            disabled={page === 1}
-            onClick={() => {
-              setPage((prev) => prev - 1);
-              handleFilterChange();
-            }}
+            disabled={page === 1 || isDisabled}
+            onClick={() => handlePageChange(page - 1)}
           >
             Previous
           </button>
           <span>Page {page}</span>
-          <button
-            onClick={() => {
-              setPage((prev) => prev + 1);
-              handleFilterChange();
-            }}
+          <button 
+            disabled={isDisabled || products.length === 0}
+            onClick={() => handlePageChange(page + 1)}
           >
             Next
           </button>

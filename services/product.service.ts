@@ -1,49 +1,38 @@
-"use client"
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { filterProductType, Product } from "@/lib/types";
+import { Product } from "@/lib/types";
 
-export const useGetAllProduct = () => {
-  const getAllProduct = async (): Promise<Product[]> => {
-    const res = await fetch("/api/products");
-    if (!res.ok) {
-      throw new Error("Failed to fetch products");
-    }
-    const data = await res.json();
-    return data.data
-  };
-  const {data: getAllProductData, isLoading} = useQuery<Product[], Error>({
-    queryKey: ["products"],  // More generic key for potential reuse
-    queryFn: getAllProduct,
-    staleTime: 60 * 1000, // 1 minute before refetching
-    retry: 2, // Will retry failed requests 2 times
-  });
-
-  return { getAllProductData, isLoading };
+type ProductFilters = {
+  price?: [number, number];
+  category?: string[];
+  page?: number;
 };
-
-export const useFilterAllProduct = () => {
-  const filterProduct = async ({
-    price,
-    category,
-    page
-  }: filterProductType): Promise<Product[]> => {
-    const res = await fetch("/api/product/filter", {
-      method: "POST",
-      body: JSON.stringify({ price: price, category: category,page:page }),
-    });
-    if (!res.ok) {
-      throw new Error("error filtering product");
+export const filterProducts=async(filters?: ProductFilters): Promise<Product[]>=> {
+  const queryKey = filters 
+    ? ['products', filters] 
+    : ['products'];
+  
+    let url = '/api/products/filter';
+    
+    if (filters) {
+      const params = new URLSearchParams();
+      if (filters.price) {
+        params.append('minPrice', filters.price[0].toString());
+        params.append('maxPrice', filters.price[1].toString());
+      }
+      if (filters.category?.length) {
+        params.append('category', filters.category.join(','));
+      }
+      if (filters.page) {
+        params.append('page', filters.page.toString());
+      }
+      url += `?${params.toString()}`;
     }
-    const data = await res.json();
-    return data.data
-  };
 
-  const { mutateAsync: filterProducts, isPending: isLoading } = useMutation({
-    mutationFn: filterProduct,
-    mutationKey: ["filterProduct"],
-  });
-  return {
-    filterProducts,
-    isLoading,
-  };
-};
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    console.log("data from service ",data)
+    return data.data ?? [];
+
+}
