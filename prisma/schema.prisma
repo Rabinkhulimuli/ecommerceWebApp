@@ -142,13 +142,13 @@ model Image{
   id  String @id @default(cuid())
   url String
   publicId String
-  product Product? @relation(fields: [productId],references: [id])
+  product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
   productId String?
   user User? @relation
 }
 model WishList{
   id String @id @default(uuid())
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
   userId String
   product Product @relation(fields: [productId],references: [id])
   productId String
@@ -172,10 +172,10 @@ model Review{
 }
 model CartItem{
   id String @id @default(uuid())
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
   userId String
   product Product @relation(fields: [productId],references: [id])
   productId String
-  quantity Int @default(1)
+  quantity Int 
   createdAt DateTime @default(now())
 }

@@ -1,8 +1,6 @@
 import { Divide } from "lucide-react"
 import type { Product } from "./types"
 
-// Mock product data - in a real app, this would come from a database
-
 
 export async function getProducts(): Promise<Product[]| null> {
 
@@ -20,13 +18,4 @@ export async function getProducts(): Promise<Product[]| null> {
     throw new Error("error getting product")
   }
 }
-export async function getProduct(id: string): Promise<Product | null> {
-  
-  return  null
-}
 
-const products=[]
-export async function getProductsByCategory(category: string): Promise<Product[]> {
-  await new Promise((resolve) => setTimeout(resolve, 400))
-  return products.filter((product) => product.category.toLowerCase() === category.toLowerCase())
-}

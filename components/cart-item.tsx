@@ -15,9 +15,9 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   const [countChanged, setCountChanged] = useState(false);
   const { removeItem } = useCart();
   const { updateCartItem, isLoading, error } = useUpdateCart();
-  const { removeCartItem } = useRemoveFromCart();
   const { data: session } = useSession();
   const userId = session?.user.id;
+  const { removeCartItem } = useRemoveFromCart();
   useEffect(() => {
     if (!userId) return;
     if (!countChanged) return;

@@ -54,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </Link>
         {product.discount && (
           <Badge className="absolute top-2 left-2 bg-red-500">
-            -{product.discount}%
+            -{product.discount.toString()}%
           </Badge>
         )}
         <Button
@@ -78,7 +78,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-gray-900">
-              ${product.price}
+              ${product.price.toString()}
             </span>
             {
               <span className="text-sm text-gray-500 line-through">

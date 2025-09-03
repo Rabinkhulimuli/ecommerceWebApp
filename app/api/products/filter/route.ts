@@ -3,8 +3,8 @@ import prisma from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
     // Get query parameters
     const minPrice = Number(searchParams.get("minPrice")) || 0;
     const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
@@ -27,9 +27,9 @@ export async function GET(request: Request) {
         where: {
           name: {
             equals: categoryName,
-            mode: 'insensitive' // case-insensitive search
-          }
-        }
+            mode: "insensitive", // case-insensitive search
+          },
+        },
       });
 
       if (category) {

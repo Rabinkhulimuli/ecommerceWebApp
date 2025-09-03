@@ -16,9 +16,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const user = await prisma.user.findUnique({
           where: { email: credentials?.email },
-          include:{
-            image:true
-          }
+          include: { image: true },
         });
 
         if (!user) throw new Error("User not found");
@@ -26,57 +24,51 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Password is empty");
 
         const isValid = await compare(credentials.password, user.password);
-        if (!isValid) throw new Error("Invalid password"); 
+        if (!isValid) throw new Error("Invalid password");
 
+        // ✅ Only return plain JSON-safe values
         return {
           id: user.id,
           email: user.email,
           name: user.name,
-          image:user.image?.url,
+          image: user.image?.url ?? null,
           role: user.role,
         };
       },
     }),
   ],
-  session: {
-    strategy: "jwt", 
-  },
-  callbacks: {
-    async jwt({
-      token,
-      user,
-    }: {
-      token: JWT;
-      user?: User & { role?: string };
-    }): Promise<JWT> {
-      if (user) {token.user = user;
-        token.role= user.role;
-        token.id=user.id;
-      }
-      console.log("JWT callback → token.role:", token.role);
-      console.log("JWT callback → user.id:", user?.id);
 
+  session: {
+    strategy: "jwt",
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image ?? null;
+      }
       return token;
     },
 
-    async session({
-      session,
-      token
-    }: {
-      session: Session;
-      token: JWT;
-    }): Promise<Session> {
-       session.user = {
-      ...session.user,
-      role: token.role,
-      id:token?.id!
-    };
-  
-
-    return session;
+    async session({ session, token }) {
+      session.user = {
+        ...session.user,
+        id: token.id as string,
+        role: token.role as string,
+        email: token.email as string,
+        name: token.name as string,
+        image: token.picture as string | null,
+      };
+      return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+
+  secret: process.env.NEXTAUTH_SECRET, // ✅ correctly placed here
 };
+
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST};
+export { handler as GET, handler as POST };

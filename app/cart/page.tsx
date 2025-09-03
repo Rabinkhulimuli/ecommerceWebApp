@@ -7,13 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { ShoppingBag } from "lucide-react"
-import { useGetCartItems } from "@/services/cart.service"
+import { useClearCart, useGetCartItems } from "@/services/cart.service"
 import { useSession } from "next-auth/react"
 import { CartItemResponsetype } from "@/lib/types"
 import { useEffect, useState } from "react"
 
 export default function CartPage() {
   const {  total, clearCart } = useCart()
+  const{clearCartItems,isLoading:deleteLoading}= useClearCart()
   const [items,setItems]= useState<CartItemResponsetype>()
   const {data:session}= useSession()
   const userId= session?.user.id
@@ -38,6 +39,11 @@ export default function CartPage() {
     )
   }
 const calculatedTotal= items.reduce((acc,item)=> acc+item.product.price *item.quantity,0)
+const handleClearCart=()=> {
+      clearCart
+      if(userId)
+        clearCartItems(userId)
+}
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
@@ -49,7 +55,7 @@ const calculatedTotal= items.reduce((acc,item)=> acc+item.product.price *item.qu
           ))}
 
           <div className="flex justify-between items-center pt-4">
-            <Button variant="outline" onClick={clearCart}>
+            <Button variant="outline" onClick={handleClearCart}>
               Clear Cart
             </Button>
             <Link href="/products">

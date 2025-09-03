@@ -8,6 +8,9 @@ import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw } from "luc
 import { useCart } from "@/hooks/use-cart"
 import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/lib/types"
+import { useAddToCart } from "@/services/cart.service"
+import { useAuth } from "@/hooks/use-auth"
+import { useSession } from "next-auth/react"
 
 interface ProductDetailsProps {
   product: Product
@@ -16,13 +19,19 @@ interface ProductDetailsProps {
 export function ProductDetails({ product }: ProductDetailsProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const { addItem } = useCart()
+const {data:session} = useSession()
+const userId= session?.user.id
   const { toast } = useToast()
-
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem(product)
+  const {addCartItem,error,isLoading}= useAddToCart()
+  const handleAddToCart =async () => {
+    if(!userId){
+     toast({
+      title: "Add to cart failed",
+      description: `user not found. Please login again`,
+    })
+      return 
     }
+      addCartItem({userId:userId,productId:product.id,quantity:quantity})
     toast({
       title: "Added to cart",
       description: `${quantity} ${product.name}(s) added to your cart.`,
@@ -36,7 +45,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       <div className="space-y-4">
         <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
           <Image
-            src={images[selectedImage] || "/placeholder.svg?height=600&width=600"}
+            src={product.images[selectedImage].url || "/placeholder.svg?height=600&width=600"}
             alt={product.name}
             width={600}
             height={600}
@@ -68,7 +77,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <Badge variant="secondary">{product.category}</Badge>
-            <Badge variant="outline">{(product?.brand)?product.brand:"no brand"}</Badge>
+            <Badge variant="outline">{"no brand"}</Badge>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
 
@@ -87,11 +96,11 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <div className="flex items-center space-x-4 mb-6">
-            <span className="text-3xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
-            {product.originalPrice && (
+            <span className="text-3xl font-bold text-gray-900">${Number(product.price).toFixed(2)}</span>
+            {product.price && (
               <>
-                <span className="text-xl text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
-                <Badge className="bg-red-500">Save ${(product.originalPrice - product.price).toFixed(2)}</Badge>
+                <span className="text-xl text-gray-500 line-through">${Number(product.price).toFixed(2)}</span>
+                <Badge className="bg-red-500">Save ${(Number(product.price) - (Number(product.price) *Number(product.discount)/100)).toFixed(2)}</Badge>
               </>
             )}
           </div>
@@ -100,7 +109,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
 
         {/* Features */}
-        {product.features && (
+        {/* {product.features && (
           <div>
             <h3 className="font-semibold mb-3">Key Features</h3>
             <ul className="space-y-2">
@@ -112,8 +121,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               ))}
             </ul>
           </div>
-        )}
-
+        )} */}
+          <div className="text-justify">
+            {product.description}
+          </div>
         {/* Quantity and Add to Cart */}
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
@@ -130,9 +141,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <div className="flex space-x-4">
-            <Button onClick={handleAddToCart} className="flex-1" size="lg" disabled={!product.inStock}>
+            <Button onClick={handleAddToCart} className="flex-1" size="lg" disabled={!(product.stock>0)}>
               <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.inStock ? "Add to Cart" : "Out of Stock"}
+              {product.stock>0 ? "Add to Cart" : "Out of Stock"}
             </Button>
             <Button variant="outline" size="lg">
               <Heart className="h-5 w-5" />

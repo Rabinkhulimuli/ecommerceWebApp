@@ -16,6 +16,9 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = adminRoutes.includes(pathname);
   const isAuthRoute = authRoutes.includes(pathname);
 
+  if (!token) {
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url));
+  }
   // If not authenticated and accessing protected route
   if (!token && (isAdminRoute || isAuthRoute)) {
     return NextResponse.redirect(new URL('/auth/sign-in', request.url));

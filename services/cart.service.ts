@@ -19,7 +19,7 @@ export const useGetCartItems = (userId: string) => {
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryFn: getCartItem,
-    queryKey: ["getcart", userId], // userId as part of queryKey for cache
+    queryKey: ["getcart"],
     enabled: !!userId, // only run if userId is defined
   });
 
@@ -33,13 +33,15 @@ export const useAddToCart = () => {
   const addToCart = async ({
     userId,
     productId,
+    quantity
   }: {
     userId: string;
     productId: string;
+    quantity?:number;
   }) => {
     const res = await fetch("/api/cart/addtocart", {
       method: "POST",
-      body: JSON.stringify({ userId, productId }),
+      body: JSON.stringify({ userId, productId,quantity }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -114,7 +116,7 @@ export const useClearCart = () => {
   const queryClient = useQueryClient();
 
   const clearCart = async (userId: string) => {
-    const res = await fetch(`/api/cart/clear-cart?userId=${userId}`, {
+    const res = await fetch(`/api/cart/removeAll?userId=${userId}`, {
       method: "DELETE",
     });
 

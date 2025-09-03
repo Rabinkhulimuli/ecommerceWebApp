@@ -26,9 +26,7 @@ export default function FilterAllProduct({category}:{category?:string}) {
 
   const isDisabled = isLoading || isFetching;
 
-  if (isLoading) {
-    return <div>Loading products...</div>;
-  }
+  
 
   return (
     <div>
