@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Package, Truck } from "lucide-react"
 import { table } from "console"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function OrderSuccessPage() {
-  const total = new URLSearchParams(window.location.search).get("price") || "0.00"
+const searchParams= useSearchParams()
+  const total = searchParams.get("price") || "0.00"
   return (
     <div className="container mx-auto px-4 py-16 max-w-2xl text-center">
       <div className="mb-8">

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Shield, Truck, CreditCard } from "lucide-react"
 import { useGetCartItems } from "@/services/cart.service"
 import { useSession } from "next-auth/react"
+import CheckoutSkeleton from "./CheckoutSkeleton"
 
 export default function CheckoutPage() {
 
@@ -15,7 +16,7 @@ export default function CheckoutPage() {
   const{cartItems:items,isLoading}= useGetCartItems(userId||"")
   const [currentStep, setCurrentStep] = useState("shipping")
   if(isLoading){
-    return <div>Loading...</div>
+    return <CheckoutSkeleton/>
   }
 
   if (!items||items.length === 0) {

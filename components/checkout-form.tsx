@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useCart } from "@/hooks/use-cart"
 import { useToast } from "@/hooks/use-toast"
 import { CreditCard, Truck, Package } from "lucide-react"
 import { SubmitHandler, useForm } from "react-hook-form"
@@ -17,6 +15,10 @@ import { Address } from "@/lib/types"
 import { useGetUser } from "@/services/user.service"
 import FormSkeleton from "./checkout/UserForm"
 import Esewa from "./esewa/Esewa"
+import { useRouter } from "next/navigation"
+import { useClearCart } from "@/services/cart.service"
+import { useSession } from "next-auth/react"
+import EsewaPayButton from "./esewa/PayButton"
 
 interface CheckoutFormProps {
   step: "shipping" | "payment" | "review"
@@ -25,12 +27,14 @@ interface CheckoutFormProps {
 }
 
 export function CheckoutForm({ step, onNext ,total}: CheckoutFormProps) {
-  const { clearCart } = useCart()
   const { toast } = useToast()
-  
+  const router= useRouter()
   const [isProcessing, setIsProcessing] = useState(false)
   const {userData,isLoading}= useGetUser()
-  
+  const{clearCartItems}= useClearCart()
+  const {data:session}= useSession()
+  const userId= session?.user.id
+
   const {handleSubmit,formState:{errors},register,setValue}= useForm<Address>({
     defaultValues: {
     firstName: "",
@@ -84,11 +88,11 @@ export function CheckoutForm({ step, onNext ,total}: CheckoutFormProps) {
         title: "Order placed successfully!",
         description: "Thank you for your purchase. You'll receive a confirmation email shortly.",
       })
-
-      clearCart()
+      if(userId)
+      clearCartItems(userId)
       setIsProcessing(false)
       // Redirect to success page
-      window.location.href = `/order-success?price=${total}`
+      router.push(`/order-success?price=${total}`)
     } else {
       onNext?.()
     }
@@ -156,7 +160,11 @@ export function CheckoutForm({ step, onNext ,total}: CheckoutFormProps) {
   }
 
   if (step === "payment") {
-    return <Esewa total_amount={total??0}/>
+    // return <EsewaPayButton
+    // totalAmount={total??0}
+    
+    // />
+    return <Esewa total_amount={total??0}/> 
    /*  return (
       <Card>
         <CardHeader>

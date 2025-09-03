@@ -2,6 +2,7 @@ import React from "react";
 import CryptoJS from "crypto-js";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import EsewaPayButton from "./PayButton";
 
 type PaymentData = {
   transaction_uuid: string;
@@ -66,7 +67,7 @@ const Esewa: React.FC<PaymentFormProps> = ({ total_amount = 100 }) => {
       />
       <input type="hidden" name="signature" value={hashInBase64} required />
       
-      <button
+      {/* <button
         className="group relative overflow-hidden bg-gradient-to-r from-white to-green-500 text-black px-6 py-3 rounded-xl shadow-lg hover:text-white hover:shadow-xl transition-all duration-300 hover:from-green-700 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
         type="submit"
       >
@@ -91,7 +92,8 @@ const Esewa: React.FC<PaymentFormProps> = ({ total_amount = 100 }) => {
           </div>
         </div>
         <div className="absolute inset-0 -left-full group-hover:left-full bg-green-700/20 skew-x-45 transition-all duration-500"></div>
-      </button>
+      </button> */}
+      <EsewaPayButton totalAmount={total_amount} />
     </form>
   );
 };

@@ -92,6 +92,7 @@ export function ProductFilters({price,setPrice,categorys,setCategories,handleFil
           </button>
         </div>
       )}
+      {/* brand */}
       {/*  <Card>
         <CardHeader>
           <CardTitle>Brands</CardTitle>

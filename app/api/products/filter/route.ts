@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -9,12 +10,12 @@ export async function GET(request: Request) {
     const minPrice = Number(searchParams.get("minPrice")) || 0;
     const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
     const categoryName = searchParams.get("category");
-    const page = Number(searchParams.get("page")) || 1;
+  const page = Math.max(Number(searchParams.get("page")) || 1, 1);
     const PAGE_SIZE = 10;
     const skip = (page - 1) * PAGE_SIZE;
 
     // Build the where clause
-    const where: any = {
+    const where:  { price: { gte: number; lte: number }; categoryId?: string }  = {
       price: {
         gte: minPrice,
         lte: maxPrice,

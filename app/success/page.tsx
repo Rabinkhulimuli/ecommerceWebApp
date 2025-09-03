@@ -158,7 +158,9 @@ const EsewaSuccessPage: React.FC = () => {
                   Return Home
                 </button>
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    if(typeof window !=="undefined")
+                      window.print()}}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Print Receipt

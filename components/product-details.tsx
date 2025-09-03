@@ -5,11 +5,9 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw } from "lucide-react"
-import { useCart } from "@/hooks/use-cart"
 import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/lib/types"
 import { useAddToCart } from "@/services/cart.service"
-import { useAuth } from "@/hooks/use-auth"
 import { useSession } from "next-auth/react"
 
 interface ProductDetailsProps {

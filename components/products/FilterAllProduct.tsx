@@ -43,7 +43,7 @@ export default function FilterAllProduct({category}:{category?:string}) {
         </aside> 
 
         <main className="lg:col-span-3">
-          {products.length === 0 ? (
+          {products.length === 0 && !isDisabled ? (
             <div>No products found</div>
           ) : (
             <> <ProductGrid products={products} isLoading={isDisabled} /></>

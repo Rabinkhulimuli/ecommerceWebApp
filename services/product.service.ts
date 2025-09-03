@@ -1,3 +1,4 @@
+
 import { Product } from "@/lib/types";
 
 type ProductFilters = {

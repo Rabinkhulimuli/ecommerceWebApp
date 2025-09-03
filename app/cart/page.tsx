@@ -1,6 +1,4 @@
 "use client"
-
-import { useCart } from "@/hooks/use-cart"
 import { CartItem } from "@/components/cart-item"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,7 +11,6 @@ import { CartItemResponsetype } from "@/lib/types"
 import { useEffect, useState } from "react"
 
 export default function CartPage() {
-  const {  total, clearCart } = useCart()
   const{clearCartItems,isLoading:deleteLoading}= useClearCart()
   const [items,setItems]= useState<CartItemResponsetype>()
   const {data:session}= useSession()
@@ -40,7 +37,6 @@ export default function CartPage() {
   }
 const calculatedTotal= items.reduce((acc,item)=> acc+item.product.price *item.quantity,0)
 const handleClearCart=()=> {
-      clearCart
       if(userId)
         clearCartItems(userId)
 }

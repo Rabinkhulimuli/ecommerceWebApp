@@ -6,7 +6,6 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/lib/types";
 import { useAddToCart } from "@/services/cart.service";
@@ -17,7 +16,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const{addItem}= useCart()
   const { toast } = useToast();
   const {data:session}= useSession()
   const userId= session?.user.id
@@ -31,8 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
       })
       return
     }
-    addItem(product)
-    addCartItem({userId:userId,productId:product.id})
+    addCartItem({userId:userId,productId:product.id,quantity:1})
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -49,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
             }
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="p-12 sm:p-6 object-cover rounded-md drop-shadow-xl  group-hover:scale-105 transition-transform duration-300"
           />
         </Link>
         {product.discount && (
@@ -78,11 +75,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-gray-900">
-              ${product.price.toString()}
+              ${(Number(product.price)-(Number(product.price)*Number(product.discount)/100)).toFixed(2)}
             </span>
             {
               <span className="text-sm text-gray-500 line-through">
-                original price
+                {Number(product.price)}
               </span>
             }
           </div>

@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
 import type { CartItemResponsetype, Product } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useRemoveFromCart, useUpdateCart } from "@/services/cart.service";
@@ -13,7 +12,6 @@ import { useSession } from "next-auth/react";
 export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   const [count, setCount] = useState(1);
   const [countChanged, setCountChanged] = useState(false);
-  const { removeItem } = useCart();
   const { updateCartItem, isLoading, error } = useUpdateCart();
   const { data: session } = useSession();
   const userId = session?.user.id;
@@ -39,7 +37,6 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   }, [item]);
   const handleRemoveCart = () => {
     if (!userId) return;
-    removeItem(item.id);
     removeCartItem({ userId, productId: item.id });
   };
   return (

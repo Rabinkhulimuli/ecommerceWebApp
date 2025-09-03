@@ -55,6 +55,7 @@
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
     "formidable": "^3.5.4",
+    "framer-motion": "^12.23.12",
     "input-otp": "1.4.1",
     "khalti-checkout-web": "^2.2.0",
     "lucide-react": "^0.454.0",
