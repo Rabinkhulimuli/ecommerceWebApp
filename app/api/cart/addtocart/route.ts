@@ -1,13 +1,9 @@
-
+export const dynamic = 'force-dynamic'
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-  /*   const session = await getServerSession(authOptions);
-    if (session?.user.id) {
-      return NextResponse.json({ error: "Unauthorize" }, { status: 401 });
-    } */
     const { userId,productId, quantity } = await request.json();
     if (!userId||!productId) {
       return NextResponse.json(
@@ -38,7 +34,7 @@ export async function POST(request: Request) {
           id: existing.id,
         },
         data: {
-          quantity: quantity?existing.quantity + quantity:existing.quantity + 1,
+          quantity: quantity!==undefined?existing.quantity + quantity:existing.quantity + 1,
         },
       });
     } else {
