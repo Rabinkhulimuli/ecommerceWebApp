@@ -88,7 +88,7 @@ export default function Page() {
                 Since day one, our mission has been simple: make everyday essentials beautifully designed,
                 responsibly made, and delightfully easy to buy.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="pt-6 flex flex-wrap items-center gap-3">
                 <Button asChild>
                   <a href="/products" aria-label="Browse our products">Shop products</a>
                 </Button>
@@ -96,7 +96,7 @@ export default function Page() {
                   <a href="/contact" aria-label="Contact our team">Contact us</a>
                 </Button>
               </div>
-              <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="pt-6 flex items-center gap-3 text-sm text-muted-foreground">
                 <Star className="h-4 w-4 fill-current" aria-hidden="true" />
                 <span>{"Trusted by 120k+ customers worldwide"}</span>
               </div>
@@ -271,7 +271,7 @@ export default function Page() {
             Featured by leading publications and creators.
           </p>
         </div>
-        <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6">
+        <div className="pt-6 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center justify-center rounded-md border bg-muted/20 p-4">
               <Image
@@ -295,12 +295,12 @@ export default function Page() {
               <p className="mt-2 text-muted-foreground">
                 Explore customer favorites, new arrivals, and curated collections — shipped fast, guaranteed.
               </p>
-              <div className="mt-6 flex items-center gap-3">
-                <Button asChild>
+              <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+                <Button asChild className="w-full sm:w-fit">
                   <a href="/products" aria-label="Start shopping now">Start shopping</a>
                 </Button>
-                <Button variant="outline" asChild>
-                  <a href="/collections" aria-label="Browse collections">Browse collections</a>
+                <Button variant="outline" asChild className="w-full sm:w-fit">
+                  <a href="/category" aria-label="Browse collections">Browse collections</a>
                 </Button>
               </div>
             </div>

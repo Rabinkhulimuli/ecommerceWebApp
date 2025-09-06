@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Mail, MessageSquare, Send } from 'lucide-react'
 import { ContactState, submitContact } from './action'
+import { toast } from 'sonner'
 
 const initialState: ContactState = { ok: false, message: '' }
 
@@ -20,6 +21,8 @@ export default function ContactForm() {
   useEffect(() => {
     if (state?.ok && formRef.current) {
       formRef.current.reset()
+    }else{
+      toast.error(state.message)
     }
   }, [state?.ok])
 

@@ -29,9 +29,9 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
            <Providers>
-            <div className="flex flex-col min-h-screen">
+            <div className=" max-h-screen min-h-screen">
               <Header />
-              <main className="flex-1">{children}</main>
+              <main className="px-4 py-4 md:px-10 md:py-6">{children}</main>
               <Footer />
             </div>
             <Toaster />

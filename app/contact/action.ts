@@ -1,5 +1,6 @@
 'use server'
-
+import prisma from "@/lib/prisma"
+import { useSession } from "next-auth/react"
 export type ContactState = {
   ok: boolean
   message: string
@@ -15,7 +16,14 @@ export async function submitContact(
   const subject = (formData.get('subject') || '').toString().trim()
   const message = (formData.get('message') || '').toString().trim()
   const company = (formData.get('company') || '').toString().trim() // honeypot
-
+  const {data:session}= useSession()
+  const userId= session?.user.id
+  if(!userId){
+      return {
+    ok: false,
+    message:"You must login first"
+  }
+  }
   const errors: Record<string, string> = {}
 
   if (company) {
@@ -45,8 +53,15 @@ export async function submitContact(
     }
   }
 
-  // Simulate sending
-  await new Promise((r) => setTimeout(r, 900))
+    await prisma.feedback.create({
+    data: {
+      name,
+      email,
+      subject,
+      message,
+      userId,
+    },
+  })
 
   console.log('New contact submission -> sending to khulimulirabin@gmail.com', {
     name,

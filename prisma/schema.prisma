@@ -46,6 +46,7 @@ model User {
   reviews Review[]
   addresses Address[] @relation("UserAddresses")
   wishlist WishList[]
+  feedback Feedback[]
 }
 
 enum Role {
@@ -178,4 +179,15 @@ model CartItem{
   productId String
   quantity Int 
   createdAt DateTime @default(now())
+}
+model Feedback {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  imageUrl  String?
+  createdAt DateTime  @default(now())
+  userId    String
+  user  User @relation(fields: [userId], references: [id])
 }

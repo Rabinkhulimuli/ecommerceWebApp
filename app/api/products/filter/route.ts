@@ -65,10 +65,14 @@ export async function GET(request: Request) {
       }),
       prisma.product.count({ where }),
     ]);
-
+  const serializedProducts = products.map((p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      discount: p.discount?.toNumber() ?? 0,
+    }))
     return NextResponse.json(
       {
-        data: products,
+        data: serializedProducts,
         meta: {
           page,
           pageSize: PAGE_SIZE,

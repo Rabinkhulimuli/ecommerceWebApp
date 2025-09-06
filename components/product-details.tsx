@@ -1,159 +1,203 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ShoppingCart, Heart, Share2, Star, Truck, Shield, RotateCcw } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import type { Product } from "@/lib/types"
-import { useAddToCart } from "@/services/cart.service"
-import { useSession } from "next-auth/react"
+import { useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ShoppingCart,
+  Heart,
+  Star,
+  Truck,
+  Shield,
+  RotateCcw,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import type { Product } from "@/lib/types";
+import { useAddToCart } from "@/services/cart.service";
+import { useSession } from "next-auth/react";
+import Share from "./AllSocialSharing/SocialSharing";
+import CircularImageSelector from "./productsubImages/CircleImage";
 
 interface ProductDetailsProps {
-  product: Product
+  product: Product;
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const [selectedImage, setSelectedImage] = useState(0)
-  const [quantity, setQuantity] = useState(1)
-const {data:session} = useSession()
-const userId= session?.user.id
-  const { toast } = useToast()
-  const {addCartItem,error,isLoading}= useAddToCart()
-  const handleAddToCart =async () => {
-    if(!userId){
-     toast({
-      title: "Add to cart failed",
-      description: `user not found. Please login again`,
-    })
-      return 
+  const [selectedImage, setSelectedImage] = useState(product.images[0].url);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+
+  const { data: session } = useSession();
+  const userId = session?.user.id;
+  const { toast } = useToast();
+  const { addCartItem } = useAddToCart();
+
+  const handleAddToCart = async () => {
+    if (!userId) {
+      toast({
+        title: "Add to cart failed",
+        description: `User not found. Please login again`,
+      });
+      return;
     }
-      addCartItem({userId:userId,productId:product.id,quantity:quantity})
+    addCartItem({ userId, productId: product.id, quantity });
     toast({
       title: "Added to cart",
       description: `${quantity} ${product.name}(s) added to your cart.`,
-    })
-  }
+    });
+  };
 
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-12">
+    <div className="grid lg:grid-cols-2 gap-8 xl:gap-12">
       {/* Product Images */}
-      <div className="space-y-4">
-        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+      <div className="flex flex-col items-center relative">
+        <div className="aspect-square w-full max-w-md md:max-w-lg rounded-lg overflow-hidden bg-gray-100">
           <Image
-            src={product.images[selectedImage].url || "/placeholder.svg?height=600&width=600"}
+            src={selectedImage || "/placeholder.svg?height=600&width=600"}
             alt={product.name}
             width={600}
             height={600}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
-        <div className="flex space-x-2">
-          {product.images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedImage(index)}
-              className={`relative w-20 h-20 rounded-md overflow-hidden border-2 ${
-                selectedImage === index ? "border-blue-600" : "border-gray-200"
-              }`}
-            >
-              <Image
-                src={image.url || "/placeholder.svg?height=80&width=80"}
-                alt={`${product.name} ${index + 1}`}
-                fill
-                className="object-cover"
-              />
-            </button>
-          ))}
+
+        {/* Thumbnail Scrollable Row */}
+        <div className="pt-1   flex items-end overflow-x-auto scrollbar-hide w-full justify-center">
+          <CircularImageSelector
+            setSelectedImage={setSelectedImage}
+            images={product.images}
+          />
         </div>
       </div>
-
       {/* Product Info */}
       <div className="space-y-6">
+        {/* Category + Name */}
         <div>
-          <div className="flex items-center space-x-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
             <Badge variant="secondary">{product.category}</Badge>
-            <Badge variant="outline">{"no brand"}</Badge>
+            <Badge variant="outline">No brand</Badge>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            {product.name}
+          </h1>
 
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="flex items-center space-x-1">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-5 w-5 ${
-                    i < Math.floor(product.rating || 5) ? "text-yellow-400 fill-current" : "text-gray-300"
-                  }`}
-                />
-              ))}
-              <span className="text-sm text-gray-600 ml-2">({product.reviews || 0} reviews)</span>
-            </div>
+          {/* Ratings */}
+          <div className="flex items-center gap-2 mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`h-5 w-5 ${
+                  i < Math.floor(product.rating || 5)
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
+                }`}
+              />
+            ))}
+            <span className="text-sm text-gray-600">
+              ({product.reviews || 0} reviews)
+            </span>
           </div>
 
-          <div className="flex items-center space-x-4 mb-6">
-            <span className="text-3xl font-bold text-gray-900">${Number(product.price).toFixed(2)}</span>
+          {/* Price */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
+            <span className="text-3xl font-bold text-gray-900">
+              ${Number(product.price).toFixed(2)}
+            </span>
             {product.price && (
               <>
-                <span className="text-xl text-gray-500 line-through">${Number(product.price).toFixed(2)}</span>
-                <Badge className="bg-red-500">Save ${(Number(product.price) - (Number(product.price) *Number(product.discount)/100)).toFixed(2)}</Badge>
+                <span className="text-lg text-gray-500 line-through">
+                  ${Number(product.price).toFixed(2)}
+                </span>
+                <Badge className="bg-red-500 text-white">
+                  Save $
+                  {(
+                    Number(product.price) -
+                    (Number(product.price) * Number(product.discount)) / 100
+                  ).toFixed(2)}
+                </Badge>
               </>
             )}
           </div>
 
-          <p className="text-gray-600 leading-relaxed mb-6">{product.description}</p>
+          {/* Description */}
+          <div>
+            <p
+              className={`text-gray-700 text-sm leading-relaxed overflow-hidden transition-all duration-300 ${
+                isExpanded ? "h-auto" : "h-24"
+              }`}
+            >
+              {product.description}
+            </p>
+            {product?.description && product?.description.length > 200 && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-1 p-0 text-blue-600"
+              >
+                {isExpanded ? "View Less" : "View All"}
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* Features */}
-        {/* {product.features && (
-          <div>
-            <h3 className="font-semibold mb-3">Key Features</h3>
-            <ul className="space-y-2">
-              {product.features.map((feature, index) => (
-                <li key={index} className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full" />
-                  <span className="text-gray-700">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
-          <div className="text-justify">
-            {product.description}
-          </div>
-        {/* Quantity and Add to Cart */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
+        {/* Quantity & Actions */}
+        <div className="space-y-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
             <label className="font-medium">Quantity:</label>
             <div className="flex items-center border rounded-md">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-2 hover:bg-gray-100">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-3 py-2 hover:bg-gray-100"
+              >
                 -
               </button>
               <span className="px-4 py-2 border-x">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 hover:bg-gray-100">
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-3 py-2 hover:bg-gray-100"
+              >
                 +
               </button>
             </div>
           </div>
 
-          <div className="flex space-x-4">
-            <Button onClick={handleAddToCart} className="flex-1" size="lg" disabled={!(product.stock>0)}>
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {product.stock>0 ? "Add to Cart" : "Out of Stock"}
+          <div className="flex  gap-1 sm:gap-4">
+            <Button
+              onClick={handleAddToCart}
+              className="flex w-full sm:w-fit items-center gap-2"
+              size="lg"
+              disabled={!(product.stock > 0)}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
             </Button>
-            <Button variant="outline" size="lg">
-              <Heart className="h-5 w-5" />
+
+            <Button
+              onClick={handleLike}
+              variant="outline"
+              size="lg"
+              className="flex w-full sm:w-fit items-center justify-center"
+            >
+              <Heart
+                className={`h-5 w-5 fill-current ${
+                  isLiked ? "text-red-500" : "text-gray-400"
+                }`}
+              />
             </Button>
-            <Button variant="outline" size="lg">
-              <Share2 className="h-5 w-5" />
-            </Button>
+
+            <Share />
           </div>
         </div>
 
         {/* Shipping Info */}
-        <div className="grid grid-cols-3 gap-4 pt-6 border-t">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t">
           <div className="text-center">
             <Truck className="h-8 w-8 mx-auto text-blue-600 mb-2" />
             <div className="text-sm font-medium">Free Shipping</div>
@@ -172,5 +216,5 @@ const userId= session?.user.id
         </div>
       </div>
     </div>
-  )
+  );
 }

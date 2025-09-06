@@ -20,7 +20,7 @@ export const useGetCartItems = (userId: string) => {
   const { data, isLoading, isError, refetch } = useQuery({
     queryFn: getCartItem,
     queryKey: ["getcart"],
-    enabled: !!userId, // only run if userId is defined
+    enabled: !!userId, 
   });
 
   return { cartItems: data, isLoading, isError, refetch };

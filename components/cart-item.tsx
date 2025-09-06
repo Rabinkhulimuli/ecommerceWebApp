@@ -37,13 +37,13 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   }, [item]);
   const handleRemoveCart = () => {
     if (!userId) return;
-    removeCartItem({ userId, productId: item.id });
+    removeCartItem({ userId, productId: item.product.id });
   };
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center space-x-4">
-          <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
             <Image
               src={
                 item.product.images[0].url ||
@@ -56,10 +56,10 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 max-w-32 truncate">
+            <h3 className="font-semibold text-gray-900 truncate max-w-xs">
               {item.product.name}
             </h3>
-            <p className="text-sm text-gray-600 truncate">
+            <p className="text-sm text-gray-600 line-clamp-2">
               {item.product?.description}
             </p>
             <p className="text-lg font-bold text-gray-900 mt-1">
@@ -67,44 +67,49 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
             </p>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={count < 2}
-              onClick={() => {
-                setCount((prev) => prev - 1);
-                setCountChanged(true);
-              }}
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <div className="w-4">{count > 9 ? count : `0${count}`}</div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => {
-                setCount((prev) => prev + 1);
-                setCountChanged(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
+          <div className="flex  w-full justify-between sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={count < 2}
+                className=""
+                onClick={() => {
+                  setCount((prev) => prev - 1);
+                  setCountChanged(true);
+                }}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <div className="w-5 text-center">
+                {count > 9 ? count : `0${count}`}
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setCount((prev) => prev + 1);
+                  setCountChanged(true);
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
 
-          <div className="text-right">
-            <p className="font-bold text-lg">
-              ${(Number(item.product.price) * count).toFixed(2)}
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRemoveCart}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              Remove
-            </Button>
+            <div className="text-right flex items-center">
+              <p className="font-bold text-lg">
+                ${(Number(item.product.price) * count).toFixed(2)}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRemoveCart}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 "
+              >
+                <Trash2 className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:block">Remove</span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
