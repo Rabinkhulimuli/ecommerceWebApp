@@ -80,6 +80,11 @@ export default function SignUp() {
       })
       if(!userDataRers.ok){
         const errorData= await userDataRers.json()
+         toast({
+        title: "Sign up failed",
+        description: "response error",
+        variant: "destructive",
+      })
         console.log(errorData)
       }
       if(userDataRers.ok){
@@ -88,6 +93,11 @@ export default function SignUp() {
       formData.append("avatar",data.avatar)
       setPendingUserData(formData)
         setShowOtpDashboard(true)
+
+        toast({
+        title: "Successfully Signed up",
+        description: "Your login credential has been successfullly created",
+      })
       }
       
     } catch (error) {

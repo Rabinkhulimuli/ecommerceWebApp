@@ -8,6 +8,7 @@ import type { CartItemResponsetype, Product } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useRemoveFromCart, useUpdateCart } from "@/services/cart.service";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   const [count, setCount] = useState(1);
@@ -15,6 +16,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   const { updateCartItem, isLoading, error } = useUpdateCart();
   const { data: session } = useSession();
   const userId = session?.user.id;
+  const router= useRouter()
   const { removeCartItem } = useRemoveFromCart();
   useEffect(() => {
     if (!userId) return;
@@ -43,7 +45,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
     <Card>
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
+          <div onClick={()=> router.push(`/products/${item.product.id}`)} className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
             <Image
               src={
                 item.product.images[0].url ||
@@ -55,7 +57,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
             />
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div onClick={()=> router.push(`/products/${item.product.id}`)} className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 truncate max-w-xs">
               {item.product.name}
             </h3>

@@ -48,21 +48,25 @@ model User {
   wishlist WishList[]
   feedback Feedback[]
 }
-
 enum Role {
   USER
   ADMIN
 }
 model Order {
-  id String @default(uuid()) @id
-  user User @relation(fields:[userId],references: [id])
-  userId String
-  totalPrice Decimal
-  status OrderStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  orderItems OrderItem[]
-  payment Payment?
-  shhipping Address?
+id          String      @id @default(uuid())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  totalPrice  Decimal
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  orderItems  OrderItem[]
+  payment     Payment?
+  shipping    Address?    @relation(fields: [shippingId], references: [id])
+  shippingId  String?
+
 }
 enum OrderStatus{
   PENDING
@@ -74,15 +78,13 @@ enum OrderStatus{
 model Address{
   id String @id @default(uuid())
   user User @relation("UserAddresses",fields: [userId],references: [id],onDelete: Cascade)
-  order Order? @relation(fields: [orderId],references: [id])
-  orderId String? @unique
   userId String
   street String
   city String
   country String
   postalCode String
   isPrimary Boolean @default(false)
-
+  order Order[]
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
   @@unique([userId,isPrimary],name:"OnlyOnePrimaryAddressPerUser")

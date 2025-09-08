@@ -132,7 +132,7 @@ export const useClearCart = () => {
     mutationFn: clearCart,
     mutationKey: ["clearCart"],
     onSuccess: () => {
-      toast({ title: "Cart Cleared", description: "All items removed." });
+      toast({ title: "Cart Cleared", description: "All items removed.",variant:"default" });
       queryClient.invalidateQueries({ queryKey: ["getcart"] });
     },
     onError: (error: any) => {

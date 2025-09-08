@@ -69,7 +69,7 @@ export default function EsewaPayButton({
         <div className="pointer-events-none absolute -top-24 right-0 h-52 w-52 rounded-full bg-emerald-100/60 blur-3xl group-hover:bg-emerald-100/80" />
 
         {/* Header */}
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex flex-col sm:flex-row sm:items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md">
               <Smartphone className="h-5 w-5" />
@@ -87,7 +87,7 @@ export default function EsewaPayButton({
         </div>
 
         {/* Amount row */}
-        <div className="mb-4 flex items-end justify-between">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-end justify-between">
           <div>
             <p className="text-xs uppercase tracking-wider text-gray-500">Total</p>
             <p className="text-2xl font-bold leading-tight text-gray-900">
@@ -128,7 +128,7 @@ export default function EsewaPayButton({
         </motion.div>
 
         {/* Bottom row: lock + helper text */}
-        <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+        <div className="mt-3 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-1.5">
             <LockKeyhole className="h-4 w-4 text-emerald-600" />
             <span>256-bit TLS encryption</span>

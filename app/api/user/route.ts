@@ -25,7 +25,7 @@ export async function GET() {
       id: user.id,
       name: user.name,
       email: user.email,
-      addresses: user.addresses, // Changed from 'address' to 'addresses' to match frontend
+      addresses: user.addresses, 
       image: user.image?.url,
     });
   } catch (err) {

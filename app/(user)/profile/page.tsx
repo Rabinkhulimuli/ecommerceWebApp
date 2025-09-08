@@ -131,7 +131,7 @@ export default function ProfilePage() {
     if (!res.ok) throw new Error(await res.text());
     toast({title:"Profile updated successfully",
       description:"your profile has been updated successfully",
-      variant:"default",
+      variant:"destructive",
     })
   } catch (error) {
     toast({
