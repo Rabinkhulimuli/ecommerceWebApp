@@ -5,6 +5,7 @@ type ProductFilters = {
   price?: [number, number];
   category?: string[];
   page?: number;
+  search?:string;
 };
 export const filterProducts=async(filters?: ProductFilters): Promise<Product[]>=> {
   const queryKey = filters 
@@ -13,8 +14,12 @@ export const filterProducts=async(filters?: ProductFilters): Promise<Product[]>=
   
     let url = '/api/products/filter';
     
+    
     if (filters) {
       const params = new URLSearchParams();
+      if(filters.search&&filters.search.length>0){
+        params.append("search",filters.search.toString())
+      }
       if (filters.price) {
         params.append('minPrice', filters.price[0].toString());
         params.append('maxPrice', filters.price[1].toString());

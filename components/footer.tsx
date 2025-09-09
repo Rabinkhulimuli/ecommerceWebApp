@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
 
 export function Footer() {
   return (
@@ -7,10 +8,14 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600" />
-              <span className="text-xl font-bold">ModernStore</span>
-            </div>
+           <Link href="/" className="flex items-center space-x-2">
+              <div className="h-8 w-8 rounded-full bg-yellow-100">
+                <div className="border flex items-center justify-center rounded-full">
+                  <Image className="rounded-full" width={100} height={100} alt="" src={"/logo.png"} />
+                </div>
+              </div>
+              <span className="text-xl font-bold text-white">PRIVE</span>
+            </Link>
             <p className="text-gray-400">
               Your trusted partner for premium products and exceptional shopping experience.
             </p>
@@ -22,7 +27,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
+            <h3 className="font-semibold mb-4 ">Quick Links</h3>
             <ul className="space-y-2 text-gray-400">
               <li>
                 <Link href="/products" className="hover:text-white">
@@ -82,7 +87,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>support@modernstore.com</span>
+                <span>support@PRIVE.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
@@ -93,7 +98,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 ModernStore. All rights reserved.</p>
+          <p>&copy; 2024 PRIVE. All rights reserved.</p>
         </div>
       </div>
     </footer>

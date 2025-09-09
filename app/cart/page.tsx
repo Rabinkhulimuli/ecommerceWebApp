@@ -41,9 +41,9 @@ const handleClearCart=()=> {
         clearCartItems(userId)
       }
   return (
-    <div className="container mx-auto sm:px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
-      <div className="grid lg:grid-cols-3 gap-8">
+    <div className="container mx-auto p-0 sm:px-4 py-8">
+      <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+      <div className="grid lg:grid-cols-3 lg:gap-8">
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <CartItem key={item.id} item={item} />
@@ -78,12 +78,12 @@ const handleClearCart=()=> {
                 <span>${(calculatedTotal * 0.08).toFixed(2)}</span>
               </div>
               <Separator />
-              <div className="flex justify-between font-bold text-lg">
+              <div className="flex justify-between items-center font-bold text-lg">
                 <span>Total</span>
                 <span>${(calculatedTotal * 1.08).toFixed(2)}</span>
               </div>
-              <Link href="/checkout" className="w-full">
-                <Button className="w-full" size="lg">
+              <Link href="/checkout" className="w-full ">
+                <Button className="w-full mt-4 " size="lg">
                   Proceed to Checkout
                 </Button>
               </Link>

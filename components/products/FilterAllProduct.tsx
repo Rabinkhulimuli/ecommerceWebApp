@@ -3,16 +3,20 @@ import React, { useState } from "react";
 import { ProductFilters } from "../product-filters";
 import { ProductGrid } from "../product-grid";
 import { useProducts } from "@/services/hooks/UseProduct";
+import { useSearchParams } from "next/navigation";
 
 export default function FilterAllProduct({category}:{category?:string}) {
   const [price, setPrice] = useState<[number, number]>([0, 5000]);
   const [page, setPage] = useState(1);
+
   const [categories, setCategories] = useState<string[]>([]);
-  
+  const searchParams= useSearchParams()
+  const searchQuery=searchParams.get("search")||""
   const { data: products = [], isLoading, isFetching } = useProducts({
     price,
     page,
-    category:category?[category]:categories
+    category:category?[category]:categories,
+    search:searchQuery
   });
 
   const handlePageChange = (newPage: number) => {

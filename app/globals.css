@@ -51,3 +51,113 @@
 .button-color{
   background-color: #2563eb;
 }
+
+
+/* Night Sky Background */
+.night-sky {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  overflow: hidden;
+}
+
+/* Sky background (dark blue dusk) */
+.sky {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.sky {
+  position: absolute;   /* covers the whole parent */
+  inset: 0;             /* stretch top/right/bottom/left */
+  width: 100%;
+  min-height: 100%;     /* grow with content */
+  overflow: hidden;
+  z-index: -1;          /* push behind content */
+}
+/* Small Moon */
+.moon {
+  position: absolute;
+  top: 80px;
+  right: 150px;
+  width: 70px;
+  height: 70px;
+  background: #f8f8f8;
+  border-radius: 50%;
+  box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Stars */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  opacity: 0.8;
+  animation: twinkle 3s infinite ease-in-out;
+}
+.star.tiny { width: 2px; height: 2px; }
+.star.small { width: 3px; height: 3px; }
+.star.medium { width: 4px; height: 4px; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* Clouds (with drift) */
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 100px;
+  filter: blur(15px);
+  animation: drift 60s linear infinite;
+}
+.cloud:before,
+.cloud:after {
+  content: "";
+  position: absolute;
+  background: inherit;
+  border-radius: 100px;
+}
+.cloud:before {
+  width: 100px;
+  height: 100px;
+  top: -30px;
+  left: -50px;
+}
+.cloud:after {
+  width: 120px;
+  height: 120px;
+  top: -40px;
+  right: -60px;
+}
+
+@keyframes drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(300px); }
+}
+
+/* Shooting star */
+.shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(-45deg, white, rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform: rotate(45deg);
+  animation: shoot 2s ease-in-out forwards;
+}
+
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(45deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  100% {
+    transform: translateX(-600px) translateY(600px) rotate(45deg);
+    opacity: 0;
+  }
+}

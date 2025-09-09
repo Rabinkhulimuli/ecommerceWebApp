@@ -21,10 +21,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // If authenticated but not admin on admin route
-  if (token && isAdminRoute && token.role !== 'admin') {
+  if (token && isAdminRoute && token.role?.toLocaleLowerCase() !== 'admin') {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
-
+    console.log("role of admin",token?.role?.toLocaleLowerCase())
   return NextResponse.next();
 }
 

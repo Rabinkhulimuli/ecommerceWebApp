@@ -63,7 +63,7 @@ export const useAddToCart = () => {
       queryClient.invalidateQueries({ queryKey: ["getcart"] });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message });
+      toast({ title: "Error", description: error.message ,variant:"destructive"});
     },
   });
 

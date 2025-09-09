@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import Image from "next/image"
 
 export function HeroSection() {
   return (
@@ -52,15 +53,19 @@ export function HeroSection() {
           </div>
 
           <div className="relative">
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 p-8">
-              <div className="w-full h-full rounded-xl bg-white shadow-2xl flex items-center justify-center">
-                <div className="text-center space-y-4">
+            <div className="aspect-square rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 p-1 sm:p-8">
+              <div className="w-full h-full bg-gradient-to-bl from-violet-500 to-fuchsia-500  rounded-xl  shadow-2xl flex items-center justify-center">
+                <div className="text-center    space-y-4">
                   <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-                    <div className="text-white text-2xl font-bold">MS</div>
+                    <div className="">
+                      <div className="border flex items-center justify-center rounded-full">
+                                        <Image className="rounded-full" width={100} height={100} alt="" src={"/logo.png"} />
+                                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-gray-900">Premium Quality</h3>
-                    <p className="text-gray-600">Carefully curated products</p>
+                    <h3 className="text-xl font-semibold text-white">Premium Quality</h3>
+                    <p className="text-white/70">Carefully curated products</p>
                   </div>
                 </div>
               </div>

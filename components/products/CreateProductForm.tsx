@@ -73,13 +73,15 @@ export default function CreateProductForm() {
         toast({
           title: "Error",
           description: "items failed to create",
+          variant:"destructive"
         });
         throw new Error("Failed to create product");
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: error?.message || "failed to create items",
+        description:  "failed to create items",
+        variant:"destructive"
       });
       console.error("Error creating product:", error);
     } finally {
@@ -91,14 +93,14 @@ export default function CreateProductForm() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         <div className="p-6 md:p-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          <h1 className=" text-xl text-nowrap sm:text-2xl font-bold text-gray-800 mb-6">
             Create New Product
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information Section */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700">
+              <h2 className="sm:text-lg font-semibold text-gray-700">
                 Basic Information
               </h2>
 
@@ -200,12 +202,10 @@ export default function CreateProductForm() {
                     htmlFor="discount"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Discount*
+                    Discount %*
                   </label>
                   <div className="relative">
-                    <span className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-500">
-                      %
-                    </span>
+                    
                     <input
                       type="number"
                       min="0"
@@ -223,7 +223,7 @@ export default function CreateProductForm() {
             </div>
 
             {/* Image Upload Section */}
-            <div className="space-y-4">
+            <div className="sm:space-y-4">
               <h2 className="text-lg font-semibold text-gray-700">
                 Product Images
               </h2>
@@ -231,18 +231,18 @@ export default function CreateProductForm() {
             </div>
 
             {/* Form Actions */}
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-end sm:space-x-3 py-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => router.push("/products")}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition w-full"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-400"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-400 w-full"
               >
                 {isSubmitting ? "Creating..." : "Create Product"}
               </button>

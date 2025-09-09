@@ -7,11 +7,11 @@ type ProductFilters = {
   price?: [number, number];
   category?: string[];
   page?: number;
+  search?:string
 };
 
 export const useProducts = (filters?: ProductFilters) => {
   
-  console.log("filter api",filters)
   return useQuery<Product[], Error>({
     queryKey:['allProducts',filters],
     queryFn:()=>  {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React, { SetStateAction } from "react";
 
-export default function DropdownCreateProduct({setOpenDropdown}:{setOpenDropdown:React.Dispatch<SetStateAction<boolean>>}) {
+export default function DropdownCreateProduct({handleDropdown}:{handleDropdown:()=> void}) {
   const adminList = [
     {
       id: 0,
@@ -20,7 +20,7 @@ export default function DropdownCreateProduct({setOpenDropdown}:{setOpenDropdown
         <Link
           className="bg-blue-600 px-4 py-2 w-full rounded-md capitalize text-white hover:bg-blue-900 transition-colors"
           key={eh.id}
-          onClick={()=> setOpenDropdown((prev)=> !prev)}
+          onClick={handleDropdown}
           href={eh.link}
         >
           {" "}

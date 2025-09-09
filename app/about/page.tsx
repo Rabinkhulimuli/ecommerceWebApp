@@ -275,7 +275,7 @@ export default function Page() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center justify-center rounded-md border bg-muted/20 p-4">
               <Image
-                src={`/generic-press-logo.png?height=56&width=160&query=press%20logo%20${i + 1}`}
+                src={`/logo.png?height=56&width=160&query=press%20logo%20${i + 1}`}
                 alt={`Press logo ${i + 1}`}
                 width={160}
                 height={56}

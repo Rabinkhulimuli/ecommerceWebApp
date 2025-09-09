@@ -18,6 +18,7 @@ import { useAddToCart } from "@/services/cart.service";
 import { useSession } from "next-auth/react";
 import Share from "./AllSocialSharing/SocialSharing";
 import CircularImageSelector from "./productsubImages/CircleImage";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailsProps {
   product: Product;
@@ -33,19 +34,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const userId = session?.user.id;
   const { toast } = useToast();
   const { addCartItem } = useAddToCart();
-
+  const router= useRouter()
   const handleAddToCart = async () => {
     if (!userId) {
       toast({
-        title: "Add to cart failed",
+        title: "You must login first",
         description: `User not found. Please login again`,
       });
+      router.push("/auth/sign-in")
       return;
     }
     addCartItem({ userId, productId: product.id, quantity });
     toast({
       title: "Added to cart",
-      description: `${quantity} ${product.name}(s) added to your cart.`,
+      description: `${quantity} ${product.name.length > 40 ? product.name.slice(0, 40) + "..." : product.name}
+(s) added to your cart.`,
     });
   };
 

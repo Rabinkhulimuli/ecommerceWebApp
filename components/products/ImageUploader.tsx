@@ -55,11 +55,11 @@ export default function FullPageImageUploader({ onUpload }: FullPageImageUploade
         setDragOver(true);
       }}
       onDragLeave={() => setDragOver(false)}
-      className={`min-h-screen flex flex-col items-center justify-center px-4 py-8 transition bg-white ${
+      className={`sm:min-h-screen flex flex-col items-center justify-center px-1 sm:px-4 py-8 transition bg-white ${
         dragOver ? 'bg-blue-50 border-blue-500' : 'bg-white'
       }`}
     >
-      <div className="w-full max-w-2xl p-6 border-2 border-dashed rounded-lg border-gray-300 bg-gray-50">
+      <div className="w-full max-w-2xl px-2 py-4 sm:p-6 border-2 border-dashed rounded-lg border-gray-300 bg-gray-50">
         <div className="text-center">
           <FiUpload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
           <p className="text-gray-600">Drag and drop images here or click to upload</p>

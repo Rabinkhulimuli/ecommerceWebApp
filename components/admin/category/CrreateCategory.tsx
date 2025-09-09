@@ -34,14 +34,16 @@ export default function Category() {
       } else {
         toast({
           title:"Error",
-          description:result?.message || "Failed to add category"
+          description:"Failed to add category",
+          variant:"destructive"
         });
       }
     } catch (error) {
       console.error("Error submitting category:", error);
       toast({
         title:'Error',
-        description:"Something went wrong"
+        description:"Something went wrong",
+        variant:"destructive"
       });
     }
   };

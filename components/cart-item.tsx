@@ -44,7 +44,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
   return (
     <Card>
       <CardContent className="p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:gap-4">
           <div onClick={()=> router.push(`/products/${item.product.id}`)} className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden flex-shrink-0">
             <Image
               src={
@@ -57,20 +57,20 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
             />
           </div>
 
-          <div onClick={()=> router.push(`/products/${item.product.id}`)} className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 truncate max-w-xs">
+          <div onClick={()=> router.push(`/products/${item.product.id}`)} className="">
+            <h3 className="font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-xs">
               {item.product.name}
             </h3>
-            <p className="text-sm text-gray-600 line-clamp-2">
+            <p className="text-sm text-gray-600 line-clamp-2 max-w-[200px] sm:max-w-xs">
               {item.product?.description}
             </p>
-            <p className="text-lg font-bold text-gray-900 mt-1">
+            <p className="text-sm font-bold text-gray-900 mt-1">
               ${Number(item.product.price).toFixed(2)}
             </p>
           </div>
 
-          <div className="flex  w-full justify-between sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 ">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col gap-2 sm:flex-row w-full justify-between sm:justify-around sm:items-center space-y-2 sm:space-y-0 sm:gap-2 ">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="icon"
@@ -98,8 +98,9 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
               </Button>
             </div>
 
-            <div className="text-right flex items-center">
-              <p className="font-bold text-lg">
+            <div className="text-right flex items-center justify-between">
+              <p className="font-bold sm:text-lg">
+                <span className="sm:hidden">Total: </span>
                 ${(Number(item.product.price) * count).toFixed(2)}
               </p>
               <Button
@@ -109,7 +110,7 @@ export function CartItem({ item }: { item: CartItemResponsetype[0] }) {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 "
               >
                 <Trash2 className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:block">Remove</span>
+                <span className="">Remove</span>
               </Button>
             </div>
           </div>

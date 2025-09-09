@@ -56,7 +56,7 @@ export default function AuthPage() {
       await signUp(email, password, name)
       toast({
         title: "Account created!",
-        description: "Welcome to ModernStore. You can now start shopping.",
+        description: "Welcome to PRIVE. You can now start shopping.",
       })
     } catch (error) {
       toast({

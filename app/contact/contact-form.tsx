@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormState } from 'react-dom'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -10,21 +10,34 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Mail, MessageSquare, Send } from 'lucide-react'
 import { ContactState, submitContact } from './action'
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-toast'
 
 const initialState: ContactState = { ok: false, message: '' }
 
 export default function ContactForm() {
   const [state, formAction] = useFormState(submitContact, initialState)
   const formRef = useRef<HTMLFormElement>(null)
+  const { toast } = useToast()
+  const [hasSubmitted, setHasSubmitted] = useState(false)
 
   useEffect(() => {
-    if (state?.ok && formRef.current) {
-      formRef.current.reset()
-    }else{
-      toast.error(state.message)
+    if (state && !hasSubmitted) {
+      if (state.ok && formRef.current) {
+        formRef.current.reset()
+        setHasSubmitted(true)
+        toast({
+          title: "Message sent successfully",
+          description: state.message,
+        })
+      } else if (state.message) {
+        toast({
+          title: "Form submission failed",
+          description: state.message,
+          variant: "destructive",
+        })
+      }
     }
-  }, [state?.ok])
+  }, [state, hasSubmitted, toast])
 
   const supportEmail = 'khulimulirabin@gmail.com'
 
@@ -37,7 +50,13 @@ export default function ContactForm() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form ref={formRef} action={formAction} className="space-y-4" noValidate>
+        <form 
+          ref={formRef} 
+          action={formAction} 
+          className="space-y-4" 
+          noValidate
+          onSubmit={() => setHasSubmitted(false)} // Reset the submitted state when form is submitted again
+        >
           {/* Honeypot field */}
           <input
             type="text"
@@ -112,7 +131,7 @@ export default function ContactForm() {
             )}
           </div>
 
-          {state?.message && (
+          {state?.message && !hasSubmitted && (
             <Alert
               variant={state.ok ? 'default' : 'destructive'}
               aria-live="polite"

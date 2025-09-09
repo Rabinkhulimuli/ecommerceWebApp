@@ -32,7 +32,7 @@ export function ProductCard({ product }: ProductCardProps) {
     addCartItem({userId:userId,productId:product.id,quantity:1})
     toast({
       title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${product.name.length > 40 ? product.name.slice(0, 40) + "..." : product.name} has been added to your cart.`,
     });
   };
 
@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
             }
             alt={product.name}
             fill
-            className="p-12 sm:p-6 object-cover rounded-md drop-shadow-xl  group-hover:scale-105 transition-transform duration-300"
+            className="p-2 sm:p-6 object-cover rounded-md drop-shadow-xl  group-hover:scale-105 transition-transform duration-300"
           />
         </Link>
         {product.discount && (
