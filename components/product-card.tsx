@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Product } from "@/lib/types";
 import { useAddToCart } from "@/services/cart.service";
 import { useSession } from "next-auth/react";
+import { WishlistButton } from "./wishlist/WishListButton";
 
 export interface ProductCardProps {
   product: Product;
@@ -17,32 +18,36 @@ export interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
-  const {data:session}= useSession()
-  const userId= session?.user.id
-  const {addCartItem,isLoading,error}= useAddToCart()
+  const { data: session } = useSession();
+  const userId = session?.user.id;
+  const { addCartItem, isLoading, error } = useAddToCart();
   const handleAddToCart = () => {
-    if(!userId) {
+    if (!userId) {
       toast({
-        title:"Error",
-        description:"You must login first",
-        variant:"destructive"
-      })
-      return
+        title: "Error",
+        description: "You must login first",
+        variant: "destructive",
+      });
+      return;
     }
-    addCartItem({userId:userId,productId:product.id,quantity:1})
+    addCartItem({ userId: userId, productId: product.id, quantity: 1 });
     toast({
       title: "Added to cart",
-      description: `${product.name.length > 40 ? product.name.slice(0, 40) + "..." : product.name} has been added to your cart.`,
+      description: `${
+        product.name.length > 40
+          ? product.name.slice(0, 40) + "..."
+          : product.name
+      } has been added to your cart.`,
     });
   };
-
   return (
     <Card className="group product-card-hover overflow-hidden">
       <div className="relative aspect-square overflow-hidden">
         <Link href={`/products/${product.id}`}>
           <Image
             src={
-              product?.images?.[0]?.url ?? "/placeholder.svg?height=300&width=300"
+              product?.images?.[0]?.url ??
+              "/placeholder.svg?height=300&width=300"
             }
             alt={product.name}
             fill
@@ -54,13 +59,10 @@ export function ProductCard({ product }: ProductCardProps) {
             -{product.discount.toString()}%
           </Badge>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 hover:bg-white"
-        >
-          <Heart className="h-4 w-4" />
-        </Button>
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity ">
+
+        <WishlistButton productId={product.id} userId={userId} />
+        </div>
       </div>
 
       <CardContent className="p-4">
@@ -75,7 +77,11 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center space-x-2">
             <span className="text-lg font-bold text-gray-900">
-              ${(Number(product.price)-(Number(product.price)*Number(product.discount)/100)).toFixed(2)}
+              $
+              {(
+                Number(product.price) -
+                (Number(product.price) * Number(product.discount)) / 100
+              ).toFixed(2)}
             </span>
             {
               <span className="text-sm text-gray-500 line-through">
@@ -101,7 +107,11 @@ export function ProductCard({ product }: ProductCardProps) {
           disabled={product.stock < 1}
         >
           <ShoppingCart className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-          {product.stock > 0 ? isLoading?"Adding...": "Add to Cart" : "Out of Stock"}
+          {product.stock > 0
+            ? isLoading
+              ? "Adding..."
+              : "Add to Cart"
+            : "Out of Stock"}
         </Button>
       </CardFooter>
     </Card>

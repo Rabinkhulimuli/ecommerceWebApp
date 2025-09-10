@@ -78,7 +78,7 @@ export default function Login() {
   }, [data, router]);
   return (
     <div className="rounded-md w-full ">
-      <div className="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <Card className="shadow-sm bg-transparent backdrop-blur-sm">
             <CardHeader className="space-y-1">
@@ -189,11 +189,11 @@ export default function Login() {
           </Card>
         </div>
       </div>
-      <div className=" text-center text-black backdrop-blur-sm py-12 text-sm">
+      <div className=" text-center backdrop-blur-sm py-5 text-sm text-white">
         Don't have an account?{" "}
         <Link
           href="/auth/sign-up"
-          className="font-medium text-black/70 hover:underline"
+          className="font-medium text-white hover:underline"
         >
           Sign up
         </Link>

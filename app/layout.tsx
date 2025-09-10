@@ -28,7 +28,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      {/* Always reserve scrollbar to avoid header/content shift */}
       <body style={{scrollbarWidth:"none"}} className={`${inter.className}`}>
         <AuthProvider>
           <CartProvider>
@@ -36,7 +35,7 @@ export default function RootLayout({
               <div className=" min-h-screen max-w-screen">
                 
                 <Header />
-                <main className="px-4 py-4 md:px-10 md:py-6">
+                <main className="px-4 py-4 sm:pt-20 md:px-10 md:py-20">
                   <ErrorBoundary>{children}</ErrorBoundary>
                 </main>
                 <Footer />

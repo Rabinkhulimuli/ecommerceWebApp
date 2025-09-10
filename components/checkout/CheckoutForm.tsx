@@ -81,7 +81,7 @@ export function CheckoutForm({ step, onNext, total ,cartItems}: CheckoutFormProp
   
         if (userId) clearCartItems(userId)
         setIsProcessing(false)
-        router.push(`/order-success?price=${total}`)
+        router.push(`/orders/order-success?price=${total}`)
       }else{
           toast({
           title: "Order failed place",

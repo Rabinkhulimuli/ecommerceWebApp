@@ -33,7 +33,7 @@ export const useAddToCart = () => {
   const addToCart = async ({
     userId,
     productId,
-    quantity
+    quantity=1
   }: {
     userId: string;
     productId: string;

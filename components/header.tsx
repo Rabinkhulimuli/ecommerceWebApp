@@ -221,7 +221,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 w-full z-40 bg-white border-b shadow-md transition-transform duration-300 ${
+      className={`fixed top-0 w-full z-40  border-b shadow-md backdrop-blur-md transition-transform duration-300 ${
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -289,7 +289,7 @@ export default function Header() {
             </Button>
 
             {/* Cart */}
-            <Link href="/cart" className="relative hidden sm:block">
+            <Link href="/products/cart" className="relative hidden sm:block">
               <Button variant="ghost" size="icon">
                 <ShoppingCart size={20} />
                 {itemCounts() !== null && (
@@ -338,6 +338,13 @@ export default function Header() {
                         href="/orders"
                       >
                         Orders
+                      </Link>
+                      <Link
+                        className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70"
+                        onClick={() => setOpenProfile(false)}
+                        href="/products/wishlist"
+                      >
+                        WishList
                       </Link>
                       <button
                         className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70"
@@ -452,11 +459,11 @@ export default function Header() {
             href="/products"
             onClick={handleMenuOpen}
             className={` hover:text-blue-600  flex items-center gap-5 ${
-              pathname.includes("/products") ? "text-rose-600" : ""
+              pathname=="/products" ? "text-rose-600" : ""
             }`}
           >
             <span> Products</span>
-            {pathname.includes("/products") && (
+            {pathname=="/products" && (
               <span>
                 <Sparkles className="w-5 h-5" />{" "}
               </span>
@@ -505,14 +512,28 @@ export default function Header() {
             )}
           </Link>
           <Link
-            href="/cart"
+            href="/products/cart"
             onClick={handleMenuOpen}
             className={` hover:text-blue-600  flex items-center gap-5 ${
-              pathname.includes("/cart") ? "text-rose-600" : ""
+              pathname=="/products/cart" ? "text-rose-600" : ""
             }`}
           >
             <span> Cart</span>
-            {pathname.includes("/cart") && (
+            {pathname=="/products/cart" && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
+          </Link>
+          <Link
+            href="/products/wishlist"
+            onClick={handleMenuOpen}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname=="/products/wishlist" ? "text-rose-600" : ""
+            }`}
+          >
+            <span> Wishlist</span>
+            {pathname=="/products/wishlist" && (
               <span>
                 <Sparkles className="w-5 h-5" />{" "}
               </span>

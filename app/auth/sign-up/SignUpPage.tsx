@@ -190,7 +190,7 @@ export default function SignUp() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="text-white">Full Name</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your full name"
@@ -208,7 +208,7 @@ export default function SignUp() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-white">Email</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Enter your email"
@@ -226,7 +226,7 @@ export default function SignUp() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-white">Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -260,7 +260,7 @@ export default function SignUp() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel className="text-white">Confirm Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -307,11 +307,11 @@ export default function SignUp() {
               </form>
             </Form>
 
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-sm text-white/70">
               Already have an account?{" "}
               <Link
                 href="/auth/sign-in"
-                className="font-medium text-primary hover:underline"
+                className="font-medium text-white hover:underline"
               >
                 Sign in
               </Link>

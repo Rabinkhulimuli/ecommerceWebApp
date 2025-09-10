@@ -50,13 +50,13 @@ const Esewa: React.FC<PaymentFormProps> = ({ total_amount = 100 }) => {
       <input
         type="hidden"
         name="success_url"
-        value="http://localhost:3000/success"
+        value="http://localhost:3000/orders/success"
         required
       />
       <input
         type="hidden"
         name="failure_url"
-        value="http://localhost:3000/failure"
+        value="http://localhost:3000/orders/failure"
         required
       />
       <input

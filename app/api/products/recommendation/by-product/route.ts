@@ -1,50 +1,74 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const searchparmas = url.searchParams;
-    const productId = searchparmas.get("id");
-    const PAGE = Math.max(Number(searchparmas.get("page")) || 1, 1);
+    const searchParams = url.searchParams;
+
+    const productId = searchParams.get("id");
+    const PAGE = Math.max(Number(searchParams.get("page")) || 1, 1);
     const PAGE_SIZE = 5;
     const skip = (PAGE - 1) * PAGE_SIZE;
+
     if (!productId) {
-      NextResponse.json(
-        { error: "product is  not a valid product" },
-        { status: 404 }
+      return NextResponse.json(
+        { error: "Product ID is missing or invalid" },
+        { status: 400 }
       );
-      return;
     }
+
     const product = await prisma.product.findUnique({
-      where: {
-        id: productId,
-      },
+      where: { id: productId },
     });
 
-    const recommendedProduct = await prisma.product.findMany({
-      where: {
-        categoryId: product?.categoryId,
-        id: {
-          not: product?.id,
+    if (!product) {
+      return NextResponse.json(
+        { error: "Product not found" },
+        { status: 404 }
+      );
+    }
+
+    const [recommendedProduct, totalCount] = await Promise.all([
+      prisma.product.findMany({
+        where: {
+          categoryId: product.categoryId,
+          id: { not: product.id },
         },
-      },
-      take: PAGE_SIZE,
-      skip,
-    });
-    NextResponse.json(
+        include:{
+          images:true
+        },
+        skip,
+        take: PAGE_SIZE,
+      }),
+      prisma.product.count({
+        where: {
+          categoryId: product.categoryId,
+          id: { not: product.id },
+        },
+      }),
+    ]);
+ const serializedProducts = recommendedProduct.map((p) => ({
+      ...p,
+      price: p.price.toNumber(),
+      discount: p.discount?.toNumber() ?? 0,
+    }));
+    return NextResponse.json(
       {
-        data: recommendedProduct,
+        data:serializedProducts,
         meta: {
           page: PAGE,
           pageSize: PAGE_SIZE,
-          totalPages: Math.ceil(recommendedProduct.length / PAGE_SIZE),
+          totalPages: Math.ceil(totalCount / PAGE_SIZE),
         },
       },
       { status: 200 }
     );
-    return;
   } catch (err) {
-    NextResponse.json({ error: "error getting product" }, { status: 404 });
-    return;
+    console.error("Recommendation API error:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
