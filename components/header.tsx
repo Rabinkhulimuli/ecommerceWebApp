@@ -1,10 +1,27 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, FormEvent, ChangeEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  FormEvent,
+  ChangeEvent,
+  useMemo,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter} from "next/navigation";
-import { Menu, X, Search, ShoppingCart, User, Activity, Sparkles, EarthLock } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Menu,
+  X,
+  Search,
+  ShoppingCart,
+  User,
+  Activity,
+  Sparkles,
+  EarthLock,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +30,7 @@ import AdminComponent from "./admin/AdminComponent";
 import { useSession, signOut } from "next-auth/react";
 import { useGetCartItems } from "@/services/cart.service";
 import { sessionUsertype } from "@/lib/types";
+import { debounce } from "@/lib/debounce";
 
 // Define types for our product and suggestion data
 interface ProductImage {
@@ -37,35 +55,37 @@ export default function Header() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const pathname= usePathname()
+  const pathname = usePathname();
   const { data, status } = useSession();
   const [user, setUser] = useState<sessionUsertype>(null);
   const router = useRouter();
   const { cartItems } = useGetCartItems(user?.id ?? "");
   const searchRef = useRef<HTMLDivElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const navArray=[
+  const suggestionList = useMemo(() => suggestions, [suggestions]);
+
+  const navArray = [
     {
-      id:0,
-      name:"Product",
-      url:"/product"
+      id: 0,
+      name: "Product",
+      url: "/product",
     },
     {
-      id:1,
-      name:"Categories",
-      url:"/categories"
+      id: 1,
+      name: "Categories",
+      url: "/categories",
     },
     {
-      id:2,
-      name:"About",
-      url:"/about"
+      id: 2,
+      name: "About",
+      url: "/about",
     },
     {
-      id:3,
-      name:"Contact",
-      url:"/contact"
+      id: 3,
+      name: "Contact",
+      url: "/contact",
     },
-  ]
+  ];
   useEffect(() => {
     if (data?.user) setUser(data.user);
   }, [data]);
@@ -74,9 +94,9 @@ export default function Header() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchRef.current && 
+        searchRef.current &&
         !searchRef.current.contains(event.target as Node) &&
-        suggestionsRef.current && 
+        suggestionsRef.current &&
         !suggestionsRef.current.contains(event.target as Node)
       ) {
         setShowSuggestions(false);
@@ -88,9 +108,9 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+  console.log("suggestion", suggestions);
   const handleMenuOpen = () => setIsMenuOpen(!isMenuOpen);
-  
+
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
     if (!isSearchOpen) {
@@ -98,22 +118,13 @@ export default function Header() {
       setTimeout(() => {
         const input = document.getElementById("search-input");
         if (input) input.focus();
-      }, 100);
+      }, 500);
     } else {
       setSearchQuery("");
       setSuggestions([]);
       setShowSuggestions(false);
       setHasSearched(false);
     }
-  };
-
-  // Fixed debounce function without 'this' issues
-  const debounce = <T extends (...args: any[]) => void>(func: T, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return (...args: Parameters<T>) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
-    };
   };
 
   const fetchSuggestions = async (query: string) => {
@@ -127,11 +138,19 @@ export default function Header() {
     setIsLoading(true);
     setHasSearched(true);
     try {
-      const response = await fetch(`/api/products/filter?search=${encodeURIComponent(query)}&limit=5`);
+      const response = await fetch(
+        `/api/products/filter?search=${encodeURIComponent(
+          query
+        )}&limit=5&suggest=true`
+      );
       if (response.ok) {
         const data = await response.json();
-        setSuggestions(data.products || []);
-        setShowSuggestions(true);
+        console.log("suggestion data", data);
+        if (JSON.stringify(data.data) !== JSON.stringify(suggestions)) {
+          setSuggestions(data.data || []);
+          console.log("suggestion data", data.data);
+          setShowSuggestions(true);
+        }
       }
     } catch (error) {
       console.error("Error fetching search suggestions:", error);
@@ -153,10 +172,9 @@ export default function Header() {
   };
 
   const handleSuggestionClick = (product: SuggestionProduct) => {
-    setSearchQuery(product.name);
     setShowSuggestions(false);
-    // Navigate to product page using useRouter
-    router.push(`/products?search=${encodeURIComponent(product.name)}`);
+    const cleanId = product.id.replace(/[{}]/g, ""); // remove { or }
+    router.push(`/products/${cleanId}`);
   };
 
   const handleSearchSubmit = (e: FormEvent) => {
@@ -170,21 +188,36 @@ export default function Header() {
 
   const itemCounts = useCallback(() => {
     if (cartItems) {
-      return cartItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+      return cartItems.reduce(
+        (sum: number, item: { quantity: number }) => sum + item.quantity,
+        0
+      );
     }
     return null;
   }, [cartItems]);
 
-  // Hide navbar on scroll down, show on scroll up
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > lastScrollY) setShowNavbar(false);
-      else setShowNavbar(true);
+ useEffect(() => {
+  let timeout: NodeJS.Timeout | null = null;
+
+  const handleScroll = () => {
+    if (timeout) return;
+    timeout = setTimeout(() => {
+      if (window.scrollY === 0) {
+        setShowNavbar(true);
+      } else if (window.scrollY > lastScrollY) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
       setLastScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+      timeout = null;
+    }, 400);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [lastScrollY]);
+
 
   return (
     <header
@@ -205,27 +238,47 @@ export default function Header() {
             />
           </div>
           <span className="text-xl font-bold text-[#670D2F]">PRIVE</span>
-          {pathname==="/"&&<span><EarthLock className="w-5 h-5 text-rose-600"/> </span>}
+          {pathname === "/" && (
+            <span>
+              <EarthLock className="w-5 h-5 text-rose-600" />{" "}
+            </span>
+          )}
         </Link>
         {/* Desktop Nav */}
         <div className="hidden lg:flex justify-center gap-8 py-2">
           {user?.role === "ADMIN" && <AdminComponent />}
-          
-          {
-            navArray.map((list)=> <span key={list.id}>
 
-          <Link href={list.url} className="hover:text-blue-600">
-            {list.name}
-          </Link>
-          {<span className={`transition-all transform ease-in-out duration-700 ${pathname===list.url?"opacity-100":"opacity-0"} flex gap-1`}>
-
-          <span className={`transition-all transform ease-in-out duration-700 ${pathname===list.url?"w-5":"w-1"} bg-red-500  h-1 rounded-full block`}> </span>
-          <span className="bg-red-500 w-1 h-1 rounded-full block"> </span>
-          <span className="bg-red-500 w-1 h-1 rounded-full block"> </span>
-          <span className="bg-red-500 w-1 h-1 rounded-full block"> </span>
-          </span>}
-          </span>)
-          }
+          {navArray.map((list) => (
+            <span key={list.id}>
+              <Link href={list.url} className="hover:text-blue-600">
+                {list.name}
+              </Link>
+              {
+                <span
+                  className={`transition-all transform ease-in-out duration-700 ${
+                    pathname === list.url ? "opacity-100" : "opacity-0"
+                  } flex gap-1`}
+                >
+                  <span
+                    className={`transition-all transform ease-in-out duration-700 ${
+                      pathname === list.url ? "w-5" : "w-1"
+                    } bg-red-500  h-1 rounded-full block`}
+                  >
+                    {" "}
+                  </span>
+                  <span className="bg-red-500 w-1 h-1 rounded-full block">
+                    {" "}
+                  </span>
+                  <span className="bg-red-500 w-1 h-1 rounded-full block">
+                    {" "}
+                  </span>
+                  <span className="bg-red-500 w-1 h-1 rounded-full block">
+                    {" "}
+                  </span>
+                </span>
+              }
+            </span>
+          ))}
         </div>
         <div className="flex items-center gap-2">
           {/* Right Icons */}
@@ -272,15 +325,26 @@ export default function Header() {
                   </Button>
                   {openProfile && (
                     <div className="absolute top-10 right-5 shadow-md space-y-2 flex flex-col items border-1 px-4 text-nowrap py-2 rounded-md bg-white">
-                      <Link className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70" onClick={()=> setOpenProfile(false)} href="/profile">Profile</Link>
-                      <Link className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70" onClick={()=> setOpenProfile(false)} href="/orders">Orders</Link>
-                      <button className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70" 
-                        onClick={() =>
-                        {
-                          signOut({ callbackUrl: "/auth/sign-in" })
-                          setOpenProfile(false)
-                        }
-                        }
+                      <Link
+                        className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70"
+                        onClick={() => setOpenProfile(false)}
+                        href="/profile"
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70"
+                        onClick={() => setOpenProfile(false)}
+                        href="/orders"
+                      >
+                        Orders
+                      </Link>
+                      <button
+                        className="hover:bg-blue-50 w-full rounded-md border px-4 py-1 font-semibold text-black/70"
+                        onClick={() => {
+                          signOut({ callbackUrl: "/auth/sign-in" });
+                          setOpenProfile(false);
+                        }}
                       >
                         {" "}
                         Sign Out
@@ -303,10 +367,10 @@ export default function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden border bg-blue-50/70"
             onClick={handleMenuOpen}
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} className=""/>}
           </Button>
         </div>
       </div>
@@ -333,12 +397,12 @@ export default function Header() {
               </div>
             )}
           </form>
-          
+
           {/* Search Suggestions */}
           {showSuggestions && (
-            <div 
+            <div
               ref={suggestionsRef}
-              className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg mt-1 z-50 max-h-60 overflow-y-auto"
+              className="fixed top-30 left-0 right-0 mx-4 bg-white border border-gray-200 rounded-md shadow-lg mt-1 z-40 max-h-[400px] overflow-hidden overflow-y-scroll "
             >
               {suggestions.length > 0 ? (
                 suggestions.map((product) => (
@@ -362,7 +426,9 @@ export default function Header() {
                     )}
                     <div>
                       <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-gray-500">${product.price}</div>
+                      <div className="text-sm text-gray-500">
+                        ${product.price}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -385,37 +451,72 @@ export default function Header() {
           <Link
             href="/products"
             onClick={handleMenuOpen}
-            className={` hover:text-blue-600  flex items-center gap-5 ${pathname.includes("/products")?"text-rose-600":""}`}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname.includes("/products") ? "text-rose-600" : ""
+            }`}
           >
-           <span> Products</span>{pathname.includes("/products")&&<span><Sparkles className="w-5 h-5"/> </span>}
+            <span> Products</span>
+            {pathname.includes("/products") && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
           </Link>
           <Link
             href="/categories"
             onClick={handleMenuOpen}
-            className={` hover:text-blue-600  flex items-center gap-5 ${pathname.includes("/categories")?"text-rose-600":""}`}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname.includes("/categories") ? "text-rose-600" : ""
+            }`}
           >
-             <span>Categories</span>{pathname.includes("/categories")&&<span><Sparkles className="w-5 h-5"/> </span>}
+            <span>Categories</span>
+            {pathname.includes("/categories") && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
           </Link>
           <Link
             href="/about"
             onClick={handleMenuOpen}
-            className={` hover:text-blue-600  flex items-center gap-5 ${pathname.includes("/about")?"text-rose-600":""}`}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname.includes("/about") ? "text-rose-600" : ""
+            }`}
           >
-            <span> About</span>{pathname.includes("/about")&&<span><Sparkles className="w-5 h-5"/> </span>}
+            <span> About</span>
+            {pathname.includes("/about") && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
           </Link>
           <Link
             href="/contact"
             onClick={handleMenuOpen}
-            className={` hover:text-blue-600  flex items-center gap-5 ${pathname.includes("/contact")?"text-rose-600":""}`}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname.includes("/contact") ? "text-rose-600" : ""
+            }`}
           >
-            <span> Contact</span>{pathname.includes("/contact")&&<span><Sparkles className="w-5 h-5"/> </span>}
+            <span> Contact</span>
+            {pathname.includes("/contact") && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
           </Link>
           <Link
             href="/cart"
             onClick={handleMenuOpen}
-            className={` hover:text-blue-600  flex items-center gap-5 ${pathname.includes("/cart")?"text-rose-600":""}`}
+            className={` hover:text-blue-600  flex items-center gap-5 ${
+              pathname.includes("/cart") ? "text-rose-600" : ""
+            }`}
           >
-            <span> Cart</span>{pathname.includes("/cart")&&<span><Sparkles className="w-5 h-5"/> </span>}
+            <span> Cart</span>
+            {pathname.includes("/cart") && (
+              <span>
+                <Sparkles className="w-5 h-5" />{" "}
+              </span>
+            )}
           </Link>
         </div>
       )}

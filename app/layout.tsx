@@ -34,6 +34,7 @@ export default function RootLayout({
           <CartProvider>
             <Providers>
               <div className=" min-h-screen max-w-screen">
+                
                 <Header />
                 <main className="px-4 py-4 md:px-10 md:py-6">
                   <ErrorBoundary>{children}</ErrorBoundary>
