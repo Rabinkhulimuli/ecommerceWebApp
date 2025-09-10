@@ -11,7 +11,7 @@ import type { Product } from "@/lib/types";
 import { useAddToCart } from "@/services/cart.service";
 import { useSession } from "next-auth/react";
 
-interface ProductCardProps {
+export interface ProductCardProps {
   product: Product;
 }
 

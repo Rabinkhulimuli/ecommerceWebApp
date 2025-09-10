@@ -19,6 +19,8 @@ import { useSession } from "next-auth/react";
 import Share from "./AllSocialSharing/SocialSharing";
 import CircularImageSelector from "./productsubImages/CircleImage";
 import { useRouter } from "next/navigation";
+import CarouselModel from "./products/CarouselModel";
+import { useRecommendation } from "@/hooks/useRecommendation";
 
 interface ProductDetailsProps {
   product: Product;
@@ -35,6 +37,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const { toast } = useToast();
   const { addCartItem } = useAddToCart();
   const router= useRouter()
+  const { recommendations, loading, error } = useRecommendation(product.id);
+
   const handleAddToCart = async () => {
     if (!userId) {
       toast({
@@ -57,7 +61,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8 xl:gap-12">
+    <div>
+      <div className="grid lg:grid-cols-2 gap-8 xl:gap-12">
       {/* Product Images */}
       <div className="flex flex-col items-center relative">
         <div className="aspect-square w-full max-w-md md:max-w-lg rounded-lg overflow-hidden bg-gray-100">
@@ -218,6 +223,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
         </div>
       </div>
+    </div>
+{/* carousel */}
+             {!loading?<CarouselModel products={recommendations}/>:<div>Loading...</div>}   
     </div>
   );
 }
