@@ -1,8 +1,8 @@
 "use client"
-import { Product } from "@/lib/types";
+import { ProductType } from "@/lib/types";
 import { useState, useEffect } from "react"
 export const useRecommendation = (id: string) => {
-  const [recommendations, setRecommendations] = useState<Product[]>([]);
+  const [recommendations, setRecommendations] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

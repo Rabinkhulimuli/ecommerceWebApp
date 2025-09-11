@@ -1,8 +1,8 @@
 import { ProductCard } from '@/components/product-card';
-import { Product } from '@/lib/types';
+import { ProductType } from '@/lib/types';
 import { ProductGridSkeleton } from './product-grid-skeleton';
 
-export function ProductGrid({ products, isLoading }: { products: Product[]; isLoading: boolean }) {
+export function ProductGrid({ products, isLoading }: { products: ProductType[]; isLoading: boolean }) {
   if (isLoading) {
     return <ProductGridSkeleton />;
   }

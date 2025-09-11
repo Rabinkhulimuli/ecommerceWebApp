@@ -1,4 +1,4 @@
-// app/categories/page.tsx
+
 import { Suspense } from 'react';
 import { CategoriesHero } from './category-hero';
 import { CategoriesGrid } from './categories-grid';

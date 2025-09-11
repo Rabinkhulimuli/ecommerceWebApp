@@ -51,7 +51,7 @@ export default function Header() {
     {
       id: 0,
       name: 'Product',
-      url: '/product',
+      url: '/products',
     },
     {
       id: 1,

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
-import type { CartItemResponsetype, Product } from '@/lib/types';
+import type { CartItemResponsetype} from '@/lib/types';
 import { useEffect, useState } from 'react';
 import { useRemoveFromCart, useUpdateCart } from '@/services/cart.service';
 import { useSession } from 'next-auth/react';

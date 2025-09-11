@@ -1,5 +1,5 @@
 
-import { Product } from "@/lib/types";
+import { ProductType } from "@/lib/types";
 
 type ProductFilters = {
   price?: [number, number];
@@ -7,7 +7,7 @@ type ProductFilters = {
   page?: number;
   search?:string;
 };
-export const filterProducts=async(filters?: ProductFilters): Promise<Product[]>=> {
+export const filterProducts=async(filters?: ProductFilters): Promise<ProductType[]>=> {
   const queryKey = filters 
     ? ['products', filters] 
     : ['products'];

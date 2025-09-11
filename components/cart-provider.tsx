@@ -1,9 +1,9 @@
 'use client';
 
 import { createContext, useReducer, type ReactNode } from 'react';
-import type { Product } from '@/lib/types';
+import type { ProductType } from '@/lib/types';
 
-interface CartItem extends Product {
+interface CartItem extends ProductType {
   quantity: number;
 }
 
@@ -13,7 +13,7 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_ITEM'; payload: Product }
+  | { type: 'ADD_ITEM'; payload: ProductType }
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' };
@@ -21,7 +21,7 @@ type CartAction =
 // Export the CartContext
 export const CartContext = createContext<{
   state: CartState;
-  addItem: (product: Product) => void;
+  addItem: (product: ProductType) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -81,7 +81,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 });
 
-  const addItem = (product: Product) => {
+  const addItem = (product: ProductType) => {
     dispatch({ type: 'ADD_ITEM', payload: product });
   };
 

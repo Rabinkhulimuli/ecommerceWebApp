@@ -1,31 +1,32 @@
-// next.config.mjs
-import withPWAInit from 'next-pwa';
+// @ts-check
 
-/** @type {import('next').NextConfig} */
+/**
+ * @type {import('next').NextConfig}
+ */
 const nextConfig = {
   eslint: {
+    // Allows production builds to complete even if there are ESLint errors
     ignoreDuringBuilds: true,
   },
   typescript: {
+    // Allows production builds to complete despite TypeScript errors
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['lottie.host'],
+    // Modern approach: use remotePatterns instead of deprecated domains
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: 'lottie.host',
+      },
+      {
+        protocol: 'https',
+        hostname: '**', // Allows images from any domain
       },
     ],
+    // Disable image optimization if needed
     unoptimized: true,
   },
 };
 
-const withPWA = withPWAInit({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  register: true,
-  skipWaiting: true,
-});
-
-export default withPWA(nextConfig);
+export default nextConfig;

@@ -1,8 +1,8 @@
 import { Divide } from "lucide-react"
-import type { Product } from "./types"
+import type { ProductType } from "./types"
 
 
-export async function getProducts(): Promise<Product[]| null> {
+export async function getProducts(): Promise<ProductType[]| null> {
 
   try{
      const data = await fetch("http://localhost:3000/api/products")

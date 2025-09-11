@@ -3,11 +3,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
-
-// A full-page global loading screen
-// You can place this in `app/loading.tsx` in Next.js App Router
-// or show conditionally in your Layout / App component
-
 export default function GlobalLoading() {
   return (
     <div className='fixed inset-0 z-50 flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-emerald-100'>

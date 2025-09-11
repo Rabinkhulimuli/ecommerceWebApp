@@ -1,5 +1,5 @@
 import type React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,11 +15,9 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'PRIVE - Premium E-commerce Experience',
-  description: 'Discover premium products with seamless shopping experience',
-  manifest: '/manifest.json',
-  themeColor: '#000000',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-};
+  description: 'Discover premium products with seamless shopping experience'
+ };
+
 
 const queryClient = new QueryClient();
 

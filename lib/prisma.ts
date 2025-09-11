@@ -1,23 +1,21 @@
 // lib/prisma.ts
-import { PrismaClient } from '@prisma/client/edge';
-import { withAccelerate } from '@prisma/extension-accelerate';
+import { PrismaClient } from '@prisma/client';
 
-// Define the proper type for the extended client
-const prismaClientSingleton = () => {
-  return new PrismaClient().$extends(withAccelerate());
-};
+// Create a singleton instance of PrismaClient
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    // Optional: enable logging
+    log: ['query', 'info', 'warn', 'error'],
+  });
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientSingleton | undefined;
-};
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-
-// Export the proper types
-export type ExtendedPrismaClient = typeof prisma;
+// Export the Prisma client type
+export type PrismaClientType = typeof prisma;
 
 export default prisma;

@@ -1,5 +1,4 @@
 import Esewa from '@/components/esewa/Esewa';
-import PaymentForm from '@/components/esewa/SecEsewa';
 import React from 'react';
 
 export default function page() {

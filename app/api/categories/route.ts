@@ -1,4 +1,3 @@
-// app/api/categories/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
@@ -19,9 +18,6 @@ export async function GET(request: Request) {
           orderBy: {
             createdAt: 'desc',
           },
-          where: {
-            published: true,
-          },
         },
       },
       where: {
@@ -35,7 +31,6 @@ export async function GET(request: Request) {
     const result = categories.map(cat => ({
       id: cat.id,
       name: cat.name,
-      slug: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),
       products: cat.products,
     }));
 

@@ -2,14 +2,14 @@ import React from 'react';
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 import { ProductCard } from '../product-card';
-import { Product } from '@/lib/types';
+import { ProductType } from '@/lib/types';
 
 export default function CarouselModel({
   products,
   loading,
   error,
 }: {
-  products: Product[];
+  products: ProductType[];
   loading: boolean;
   error: string | null;
 }) {

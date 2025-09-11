@@ -1,6 +1,6 @@
 
 import { cache } from 'react';
-import prisma, { ExtendedPrismaClient } from './prisma';
+import prisma from './prisma';
 import { UserWithInteractions, ProductWithDetails, RecommendationResult } from './types';
 
 // Move cosineSim function outside to avoid ES5 strict mode issues

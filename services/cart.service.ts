@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { cartItemRersponse, CartItemResponsetype, UpdateCartParams } from "@/lib/types";
+import { CartItemResponsetype, UpdateCartParams } from "@/lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useGetCartItems = (userId: string) => {
