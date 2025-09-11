@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,7 @@ const EsewaFailurePage: React.FC = () => {
 
   useEffect(() => {
     const dataParam = searchParams.get('data');
-    
+
     if (dataParam) {
       try {
         const decodedData = decodeURIComponent(dataParam);
@@ -33,12 +33,12 @@ const EsewaFailurePage: React.FC = () => {
       } catch (err) {
         console.error('Error parsing error data:', err);
         setErrorData({
-          error_message: 'Failed to process payment information'
+          error_message: 'Failed to process payment information',
         });
       }
     } else {
       setErrorData({
-        error_message: 'No payment data received'
+        error_message: 'No payment data received',
       });
     }
   }, [searchParams]);
@@ -47,73 +47,86 @@ const EsewaFailurePage: React.FC = () => {
     <>
       <Head>
         <title>Payment Failed - Esewa</title>
-        <meta name="description" content="Your payment was not processed successfully" />
+        <meta name='description' content='Your payment was not processed successfully' />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-red-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
+      <div className='min-h-screen bg-gradient-to-b from-red-50 to-white px-4 py-12 sm:px-6 lg:px-8'>
+        <div className='mx-auto max-w-3xl'>
+          <div className='mb-8 text-center'>
             <Image
-              src="/esewa/esewa.png"
-              alt="Esewa Logo"
+              src='/esewa/esewa.png'
+              alt='Esewa Logo'
               width={120}
               height={60}
-              className="mx-auto"
+              className='mx-auto'
             />
           </div>
 
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className='overflow-hidden rounded-lg bg-white shadow-lg'>
             {/* Header */}
-            <div className="bg-red-600 px-6 py-4">
-              <h1 className="text-2xl font-bold text-white">Payment Failed</h1>
+            <div className='bg-red-600 px-6 py-4'>
+              <h1 className='text-2xl font-bold text-white'>Payment Failed</h1>
             </div>
 
             {/* Content */}
-            <div className="p-6">
-              <div className="flex justify-center mb-6">
-                <div className="bg-red-100 p-4 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <div className='p-6'>
+              <div className='mb-6 flex justify-center'>
+                <div className='rounded-full bg-red-100 p-4'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-16 w-16 text-red-600'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M6 18L18 6M6 6l12 12'
+                    />
                   </svg>
                 </div>
               </div>
 
-              <div className="text-center mb-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Payment Unsuccessful</h2>
-                <p className="text-gray-600">
+              <div className='mb-8 text-center'>
+                <h2 className='mb-2 text-xl font-semibold text-gray-800'>Payment Unsuccessful</h2>
+                <p className='text-gray-600'>
                   {errorData?.error_message || 'Your transaction could not be completed.'}
                 </p>
               </div>
 
               {/* Error Details */}
               {errorData && (
-                <div className="border border-gray-200 rounded-lg overflow-hidden mb-8">
-                  <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                    <h3 className="font-medium text-gray-700">Transaction Details</h3>
+                <div className='mb-8 overflow-hidden rounded-lg border border-gray-200'>
+                  <div className='border-b border-gray-200 bg-gray-50 px-4 py-3'>
+                    <h3 className='font-medium text-gray-700'>Transaction Details</h3>
                   </div>
-                  <div className="divide-y divide-gray-200">
+                  <div className='divide-y divide-gray-200'>
                     {errorData.transaction_code && (
-                      <div className="grid grid-cols-2 p-4">
-                        <span className="text-gray-600">Transaction Code:</span>
-                        <span className="font-medium">{errorData.transaction_code}</span>
+                      <div className='grid grid-cols-2 p-4'>
+                        <span className='text-gray-600'>Transaction Code:</span>
+                        <span className='font-medium'>{errorData.transaction_code}</span>
                       </div>
                     )}
                     {errorData.transaction_uuid && (
-                      <div className="grid grid-cols-2 p-4">
-                        <span className="text-gray-600">Reference ID:</span>
-                        <span className="font-medium">{errorData.transaction_uuid}</span>
+                      <div className='grid grid-cols-2 p-4'>
+                        <span className='text-gray-600'>Reference ID:</span>
+                        <span className='font-medium'>{errorData.transaction_uuid}</span>
                       </div>
                     )}
                     {errorData.total_amount && (
-                      <div className="grid grid-cols-2 p-4">
-                        <span className="text-gray-600">Amount:</span>
-                        <span className="font-medium">Rs. {errorData.total_amount}</span>
+                      <div className='grid grid-cols-2 p-4'>
+                        <span className='text-gray-600'>Amount:</span>
+                        <span className='font-medium'>Rs. {errorData.total_amount}</span>
                       </div>
                     )}
                     {errorData.status && (
-                      <div className="grid grid-cols-2 p-4">
-                        <span className="text-gray-600">Status:</span>
-                        <span className="font-medium text-red-600 capitalize">{errorData.status.toLowerCase()}</span>
+                      <div className='grid grid-cols-2 p-4'>
+                        <span className='text-gray-600'>Status:</span>
+                        <span className='font-medium capitalize text-red-600'>
+                          {errorData.status.toLowerCase()}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -121,16 +134,16 @@ const EsewaFailurePage: React.FC = () => {
               )}
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <div className='flex flex-col justify-center gap-4 sm:flex-row'>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                  className='rounded-md bg-red-600 px-6 py-3 text-white transition-colors hover:bg-red-700'
                 >
                   Return Home
                 </button>
                 <button
                   onClick={() => router.back()}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                  className='rounded-md border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50'
                 >
                   Try Again
                 </button>
@@ -138,8 +151,8 @@ const EsewaFailurePage: React.FC = () => {
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-              <p className="text-sm text-gray-500 text-center">
+            <div className='border-t border-gray-200 bg-gray-50 px-6 py-4'>
+              <p className='text-center text-sm text-gray-500'>
                 Need help? Contact our support team at support@example.com
               </p>
             </div>

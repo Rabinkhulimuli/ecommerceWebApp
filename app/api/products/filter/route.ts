@@ -1,7 +1,7 @@
-export const dynamic = "force-dynamic";
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+export const dynamic = 'force-dynamic';
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // Define types based on your Prisma schema
 interface ProductImage {
@@ -34,14 +34,14 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const searchParams = url.searchParams;
-    
+
     // Get query parameters
-    const minPrice = Number(searchParams.get("minPrice")) || 0;
-    const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
-    const categoryName = searchParams.get("category");
-    const searchQuery = searchParams.get("search");
-    const isSuggestion = searchParams.get("suggest") === "true";
-    const page = Math.max(Number(searchParams.get("page")) || 1, 1);
+    const minPrice = Number(searchParams.get('minPrice')) || 0;
+    const maxPrice = Number(searchParams.get('maxPrice')) || 5000;
+    const categoryName = searchParams.get('category');
+    const searchQuery = searchParams.get('search');
+    const isSuggestion = searchParams.get('suggest') === 'true';
+    const page = Math.max(Number(searchParams.get('page')) || 1, 1);
     const PAGE_SIZE = isSuggestion ? 5 : 10;
     const skip = isSuggestion ? 0 : (page - 1) * PAGE_SIZE;
 
@@ -56,8 +56,8 @@ export async function GET(request: Request) {
     // Add search filter if provided
     if (searchQuery) {
       where.OR = [
-        { name: { contains: searchQuery, mode: "insensitive" } },
-        { description: { contains: searchQuery, mode: "insensitive" } },
+        { name: { contains: searchQuery, mode: 'insensitive' } },
+        { description: { contains: searchQuery, mode: 'insensitive' } },
       ];
     }
 
@@ -67,7 +67,7 @@ export async function GET(request: Request) {
         where: {
           name: {
             equals: categoryName,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
       });
@@ -103,34 +103,31 @@ export async function GET(request: Request) {
     });
 
     // Then fetch total count if not a suggestion
-    const total = isSuggestion 
-      ? products.length 
-      : await prisma.product.count({ where });
-    
+    const total = isSuggestion ? products.length : await prisma.product.count({ where });
+
     // Serialize products (convert Decimal to number)
-    const serializedProducts = products.map((p) => ({
+    const serializedProducts = products.map(p => ({
       ...p,
       price: p.price.toNumber(),
       discount: p.discount?.toNumber() ?? 0,
     }));
-    
+
     return NextResponse.json(
       {
         data: serializedProducts,
-        meta: isSuggestion ? null : {
-          page,
-          pageSize: PAGE_SIZE,
-          total,
-          totalPages: Math.ceil(total / PAGE_SIZE),
-        },
+        meta: isSuggestion
+          ? null
+          : {
+              page,
+              pageSize: PAGE_SIZE,
+              total,
+              totalPages: Math.ceil(total / PAGE_SIZE),
+            },
       },
       { status: 200 }
     );
   } catch (err) {
-    console.error("Error filtering products:", err);
-    return NextResponse.json(
-      { error: "Failed to filter products" },
-      { status: 500 }
-    );
+    console.error('Error filtering products:', err);
+    return NextResponse.json({ error: 'Failed to filter products' }, { status: 500 });
   }
 }

@@ -1,6 +1,6 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { z } from "zod";
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
 const updateCartSchema = z.object({
   userId: z.string().min(1),
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     const parsed = updateCartSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid input", details: parsed.error.flatten() },
+        { error: 'Invalid input', details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -30,10 +30,7 @@ export async function POST(request: Request) {
     });
 
     if (!existingCartItem) {
-      return NextResponse.json(
-        { error: "Cart item not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Cart item not found' }, { status: 404 });
     }
 
     const updatedCartItem = await prisma.cartItem.update({
@@ -47,7 +44,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "Cart updated successfully",
+        message: 'Cart updated successfully',
         data: {
           id: updatedCartItem.id,
           quantity: updatedCartItem.quantity,
@@ -58,10 +55,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (err) {
-    console.error("Cart update error:", err);
-    return NextResponse.json(
-      { error: "Failed to update cart item" },
-      { status: 500 }
-    );
+    console.error('Cart update error:', err);
+    return NextResponse.json({ error: 'Failed to update cart item' }, { status: 500 });
   }
 }

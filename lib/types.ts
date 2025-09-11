@@ -1,6 +1,8 @@
-import { Decimal } from "@prisma/client/runtime/library";
 
-export interface Product {
+import { Order, WishList, View, Product, User as PrismaUser, OrderItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library';
+
+export type ProductType= {
   id: string;
   name: string;
   description?: string;
@@ -56,15 +58,16 @@ export interface User {
   addresses?: Address[];
 }
 
-export interface Order {
-  id: string;
-  userId: string;
-  items: Array<Product & { quantity: number }>;
-  total: number;
-  status: "pending" | "processing" | "shipped" | "delivered";
-  createdAt: Date;
-  shippingAddress: Address;
-}
+
+// export interface Order {
+//   id: string;
+//   userId: string;
+//   items: Array<Product & { quantity: number }>;
+//   total: number;
+//   status: "pending" | "processing" | "shipped" | "delivered";
+//   createdAt: Date;
+//   shippingAddress: Address;
+// }
 export type filterProductType = {
   price?: number[];
   category?: string[];
@@ -110,3 +113,22 @@ export type getUserResType = {
     isPrimary: boolean
   }[];
 };
+
+export interface UserWithInteractions extends PrismaUser {
+  orders: Array<Order & {
+    items: OrderItem[];
+  }>;
+  wishlists: WishList[];
+  views: View[];
+}
+
+export interface ProductWithDetails extends Product {
+  images?: any[];
+  category?: any;
+}
+
+export interface RecommendationResult {
+  products: ProductWithDetails[];
+  generatedAt: Date;
+  source: 'algorithm' | 'fallback';
+}

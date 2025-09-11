@@ -1,9 +1,9 @@
-import { hashPassword } from "@/lib/auth-util";
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { hashPassword } from '@/lib/auth-util';
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
+import { v2 as cloudinary } from 'cloudinary';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 export const dynamic = 'force-dynamic';
 
 // Configure Cloudinary
@@ -17,11 +17,11 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     // Extract form data
-    const email = formData.get("email")?.toString();
-    const name = formData.get("name")?.toString();
-    const password = formData.get("password")?.toString();
-    const otp = formData.get("otp")?.toString();
-    const imageFile = formData.get("avatar") as File | null;
+    const email = formData.get('email')?.toString();
+    const name = formData.get('name')?.toString();
+    const password = formData.get('password')?.toString();
+    const otp = formData.get('otp')?.toString();
+    const imageFile = formData.get('avatar') as File | null;
 
     // Validate required fields
     /* if (!email || !name || !password || !otp) {
@@ -30,33 +30,21 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     } */
-if (!email) {
-  return NextResponse.json(
-    { error: "Email is required" },
-    { status: 400 }
-  );
-}
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
 
-if (!name) {
-  return NextResponse.json(
-    { error: "Name is required" },
-    { status: 400 }
-  );
-}
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
 
-if (!password) {
-  return NextResponse.json(
-    { error: "Password is required" },
-    { status: 400 }
-  );
-}
+    if (!password) {
+      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
+    }
 
-if (!otp) {
-  return NextResponse.json(
-    { error: "OTP is required" },
-    { status: 400 }
-  );
-}
+    if (!otp) {
+      return NextResponse.json({ error: 'OTP is required' }, { status: 400 });
+    }
 
     // Validate OTP
     const otpEntry = await prisma.oTP.findFirst({
@@ -64,10 +52,7 @@ if (!otp) {
     });
 
     if (!otpEntry || otpEntry.expiresAt < new Date()) {
-      return NextResponse.json(
-        { error: "Invalid or expired OTP" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 });
     }
 
     // Upload image to Cloudinary if exists
@@ -77,14 +62,12 @@ if (!otp) {
       const buffer = Buffer.from(arrayBuffer);
 
       // Convert to base64 for Cloudinary upload
-      const base64Image = `data:${imageFile.type};base64,${buffer.toString(
-        "base64"
-      )}`;
+      const base64Image = `data:${imageFile.type};base64,${buffer.toString('base64')}`;
 
       const uploadResult = await cloudinary.uploader.upload(base64Image, {
-        folder: "user-avatars",
-        format: "webp", // Convert to webp for better performance
-        quality: "auto",
+        folder: 'user-avatars',
+        format: 'webp', // Convert to webp for better performance
+        quality: 'auto',
       });
 
       imageUrl = {
@@ -121,10 +104,7 @@ if (!otp) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Signup error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

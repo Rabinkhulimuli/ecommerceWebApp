@@ -29,12 +29,15 @@ export default function FullPageImageUploader({ onUpload }: FullPageImageUploade
     }
   };
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    handleFiles(droppedFiles);
-  }, [files]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      handleFiles(droppedFiles);
+    },
+    [files]
+  );
 
   const removeImage = (index: number) => {
     URL.revokeObjectURL(previewImages[index]);
@@ -50,52 +53,52 @@ export default function FullPageImageUploader({ onUpload }: FullPageImageUploade
   return (
     <div
       onDrop={handleDrop}
-      onDragOver={(e) => {
+      onDragOver={e => {
         e.preventDefault();
         setDragOver(true);
       }}
       onDragLeave={() => setDragOver(false)}
-      className={`sm:min-h-screen flex flex-col items-center justify-center px-1 sm:px-4 py-8 transition bg-white ${
-        dragOver ? 'bg-blue-50 border-blue-500' : 'bg-white'
+      className={`flex flex-col items-center justify-center bg-white px-1 py-8 transition sm:min-h-screen sm:px-4 ${
+        dragOver ? 'border-blue-500 bg-blue-50' : 'bg-white'
       }`}
     >
-      <div className="w-full max-w-2xl px-2 py-4 sm:p-6 border-2 border-dashed rounded-lg border-gray-300 bg-gray-50">
-        <div className="text-center">
-          <FiUpload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-600">Drag and drop images here or click to upload</p>
-          <p className="text-sm text-gray-400 mt-1">Supported: PNG, JPG, JPEG (max 5MB each)</p>
+      <div className='w-full max-w-2xl rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-2 py-4 sm:p-6'>
+        <div className='text-center'>
+          <FiUpload className='mx-auto mb-2 h-10 w-10 text-gray-400' />
+          <p className='text-gray-600'>Drag and drop images here or click to upload</p>
+          <p className='mt-1 text-sm text-gray-400'>Supported: PNG, JPG, JPEG (max 5MB each)</p>
 
           <label
-            htmlFor="file-upload"
-            className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700 transition"
+            htmlFor='file-upload'
+            className='mt-4 inline-block cursor-pointer rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
           >
             Browse Files
           </label>
           <input
-            id="file-upload"
-            type="file"
+            id='file-upload'
+            type='file'
             multiple
-            accept="image/*"
+            accept='image/*'
             onChange={handleFileInput}
-            className="hidden"
+            className='hidden'
           />
         </div>
       </div>
 
       {previewImages.length > 0 && (
-        <div className="w-full max-w-4xl mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className='mt-8 grid w-full max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4'>
           {previewImages.map((src, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className='group relative'>
               <img
                 src={src}
                 alt={`Preview ${index}`}
-                className="w-full h-40 object-cover rounded-lg"
+                className='h-40 w-full rounded-lg object-cover'
               />
               <button
                 onClick={() => removeImage(index)}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
+                className='absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition group-hover:opacity-100'
               >
-                <FiX className="w-4 h-4" />
+                <FiX className='h-4 w-4' />
               </button>
             </div>
           ))}

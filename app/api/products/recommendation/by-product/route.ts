@@ -1,21 +1,18 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    const productId = searchParams.get("id");
-    const PAGE = Math.max(Number(searchParams.get("page")) || 1, 1);
+    const productId = searchParams.get('id');
+    const PAGE = Math.max(Number(searchParams.get('page')) || 1, 1);
     const PAGE_SIZE = 5;
     const skip = (PAGE - 1) * PAGE_SIZE;
 
     if (!productId) {
-      return NextResponse.json(
-        { error: "Product ID is missing or invalid" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Product ID is missing or invalid' }, { status: 400 });
     }
 
     const product = await prisma.product.findUnique({
@@ -23,10 +20,7 @@ export async function GET(request: Request) {
     });
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     const [recommendedProduct, totalCount] = await Promise.all([
@@ -35,8 +29,8 @@ export async function GET(request: Request) {
           categoryId: product.categoryId,
           id: { not: product.id },
         },
-        include:{
-          images:true
+        include: {
+          images: true,
         },
         skip,
         take: PAGE_SIZE,
@@ -48,14 +42,14 @@ export async function GET(request: Request) {
         },
       }),
     ]);
- const serializedProducts = recommendedProduct.map((p) => ({
+    const serializedProducts = recommendedProduct.map(p => ({
       ...p,
       price: p.price.toNumber(),
       discount: p.discount?.toNumber() ?? 0,
     }));
     return NextResponse.json(
       {
-        data:serializedProducts,
+        data: serializedProducts,
         meta: {
           page: PAGE,
           pageSize: PAGE_SIZE,
@@ -65,10 +59,7 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   } catch (err) {
-    console.error("Recommendation API error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Recommendation API error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

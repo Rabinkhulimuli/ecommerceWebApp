@@ -1,8 +1,8 @@
-import React from "react";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
-import { ProductCard } from "../product-card";
-import { Product } from "@/lib/types";
+import React from 'react';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import { ProductCard } from '../product-card';
+import { Product } from '@/lib/types';
 
 export default function CarouselModel({
   products,
@@ -11,7 +11,7 @@ export default function CarouselModel({
 }: {
   products: Product[];
   loading: boolean;
-  error: string|null;
+  error: string | null;
 }) {
   const responsive = {
     superLargeDesktop: {
@@ -38,24 +38,24 @@ export default function CarouselModel({
 
   // Skeleton loader component
   const SkeletonCard = () => (
-    <div className="animate-pulse flex flex-col items-center p-4 rounded-xl border shadow-sm bg-gray-100 h-64">
-      <div className="w-32 h-32 bg-gray-300 rounded-md mb-4" />
-      <div className="w-24 h-4 bg-gray-300 rounded mb-2" />
-      <div className="w-16 h-4 bg-gray-200 rounded" />
+    <div className='flex h-64 animate-pulse flex-col items-center rounded-xl border bg-gray-100 p-4 shadow-sm'>
+      <div className='mb-4 h-32 w-32 rounded-md bg-gray-300' />
+      <div className='mb-2 h-4 w-24 rounded bg-gray-300' />
+      <div className='h-4 w-16 rounded bg-gray-200' />
     </div>
   );
 
   if (loading) {
     return (
-      <div className="top-selling-carousel">
+      <div className='top-selling-carousel'>
         <Carousel
           responsive={responsive}
           autoPlay={false}
           infinite={false}
           keyBoardControl={false}
-          removeArrowOnDeviceType={["mobile"]}
-          itemClass="carousel-item-padding-40-px"
-          containerClass="carousel-container"
+          removeArrowOnDeviceType={['mobile']}
+          itemClass='carousel-item-padding-40-px'
+          containerClass='carousel-container'
         >
           {Array.from({ length: 5 }).map((_, idx) => (
             <SkeletonCard key={idx} />
@@ -66,7 +66,7 @@ export default function CarouselModel({
   }
 
   if (error) {
-    return <div className="text-red-500">⚠ {error}</div>;
+    return <div className='text-red-500'>⚠ {error}</div>;
   }
 
   if (!products || products.length <= 0) {
@@ -81,13 +81,13 @@ export default function CarouselModel({
         autoPlaySpeed={3000}
         infinite={true}
         keyBoardControl={true}
-        removeArrowOnDeviceType={["mobile"]}
-        dotListClass="custom-dot-list-style"
-        itemClass="carousel-item-padding-40-px"
-        containerClass="carousel-container"
+        removeArrowOnDeviceType={['mobile']}
+        dotListClass='custom-dot-list-style'
+        itemClass='carousel-item-padding-40-px'
+        containerClass='carousel-container'
       >
-        {products.map((product) => (
-          <div key={product.id} className="product-card">
+        {products.map(product => (
+          <div key={product.id} className='product-card'>
             <ProductCard product={product} />
           </div>
         ))}

@@ -1,10 +1,9 @@
-
-import WishlistPage from "@/components/wishlist/Wishlist"
+import WishlistPage from '@/components/wishlist/Wishlist';
 
 export default function HomePage() {
   return (
     <div>
-      <WishlistPage/>
+      <WishlistPage />
     </div>
-  )
+  );
 }

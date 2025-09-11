@@ -1,7 +1,7 @@
-"use client"
-import { useEffect, useRef, useState } from "react";
+'use client';
+import { useEffect, useRef, useState } from 'react';
 
-export function  NavbarWrapper({ children }: { children: React.ReactNode }) {
+export function NavbarWrapper({ children }: { children: React.ReactNode }) {
   const [showNavbar, setShowNavbar] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -17,12 +17,14 @@ export function  NavbarWrapper({ children }: { children: React.ReactNode }) {
 
       lastScrollY.current = window.scrollY;
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <div className={`${showNavbar ? "translate-y-0" : "-translate-y-full"} transition-transform duration-300`}>
+    <div
+      className={`${showNavbar ? 'translate-y-0' : '-translate-y-full'} transition-transform duration-300`}
+    >
       {children}
     </div>
   );

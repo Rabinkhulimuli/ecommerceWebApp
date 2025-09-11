@@ -1,41 +1,38 @@
-import type React from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Footer } from "@/components/footer";
-import { CartProvider } from "@/components/cart-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/components/auth-provider";
-import { Providers } from "./provider";
-import ErrorBoundary from "@/components/errorboundary/ErrorBoundary";
-import Header from "@/components/header";
+import type React from 'react';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Footer } from '@/components/footer';
+import { CartProvider } from '@/components/cart-provider';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/components/auth-provider';
+import { Providers } from './provider';
+import ErrorBoundary from '@/components/errorboundary/ErrorBoundary';
+import Header from '@/components/header';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "PRIVE - Premium E-commerce Experience",
-  description: "Discover premium products with seamless shopping experience",
-  generator: "v0.dev",
+  title: 'PRIVE - Premium E-commerce Experience',
+  description: 'Discover premium products with seamless shopping experience',
+  manifest: '/manifest.json',
+  themeColor: '#000000',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 };
 
 const queryClient = new QueryClient();
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body style={{scrollbarWidth:"none"}} className={`${inter.className}`}>
+    <html lang='en'>
+      <body style={{ scrollbarWidth: 'none' }} className={`${inter.className}`}>
         <AuthProvider>
           <CartProvider>
             <Providers>
-              <div className=" min-h-screen max-w-screen">
-                
+              <div className='max-w-screen min-h-screen'>
                 <Header />
-                <main className="px-4 py-4 sm:pt-20 md:px-10 md:py-20">
+                <main className='px-4 py-4 sm:pt-20 md:px-10 md:py-20'>
                   <ErrorBoundary>{children}</ErrorBoundary>
                 </main>
                 <Footer />

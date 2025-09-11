@@ -1,130 +1,130 @@
-'use client'
-import { useFormState } from 'react-dom'
-import { useEffect, useRef, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Mail, MessageSquare, Send } from 'lucide-react'
-import { ContactState, submitContact } from './action'
-import { useToast } from '@/hooks/use-toast'
+'use client';
+import { useFormState } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Mail, MessageSquare, Send } from 'lucide-react';
+import { ContactState, submitContact } from './action';
+import { useToast } from '@/hooks/use-toast';
 
-const initialState: ContactState = { ok: false, message: '' }
+const initialState: ContactState = { ok: false, message: '' };
 
 export default function ContactForm() {
-  const [state, formAction] = useFormState(submitContact, initialState)
-  const formRef = useRef<HTMLFormElement>(null)
-  const { toast } = useToast()
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [state, formAction] = useFormState(submitContact, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { toast } = useToast();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     if (state && !hasSubmitted) {
       if (state.ok && formRef.current) {
-        formRef.current.reset()
-        setHasSubmitted(true)
+        formRef.current.reset();
+        setHasSubmitted(true);
         toast({
-          title: "Message sent successfully",
+          title: 'Message sent successfully',
           description: state.message,
-        })
+        });
       } else if (state.message) {
         toast({
-          title: "Form submission failed",
+          title: 'Form submission failed',
           description: state.message,
-          variant: "destructive",
-        })
+          variant: 'destructive',
+        });
       }
     }
-  }, [state, hasSubmitted, toast])
+  }, [state, hasSubmitted, toast]);
 
-  const supportEmail = 'khulimulirabin@gmail.com'
+  const supportEmail = 'khulimulirabin@gmail.com';
 
   return (
-    <Card className="border">
+    <Card className='border'>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5" aria-hidden="true" />
+        <CardTitle className='flex items-center gap-2'>
+          <MessageSquare className='h-5 w-5' aria-hidden='true' />
           Send us a message
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form 
-          ref={formRef} 
-          action={formAction} 
-          className="space-y-4" 
+        <form
+          ref={formRef}
+          action={formAction}
+          className='space-y-4'
           noValidate
           onSubmit={() => setHasSubmitted(false)} // Reset the submitted state when form is submitted again
         >
           {/* Honeypot field */}
           <input
-            type="text"
-            name="company"
-            className="hidden"
+            type='text'
+            name='company'
+            className='hidden'
             tabIndex={-1}
-            autoComplete="off"
-            aria-hidden="true"
+            autoComplete='off'
+            aria-hidden='true'
           />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Your name</Label>
+          <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='space-y-2'>
+              <Label htmlFor='name'>Your name</Label>
               <Input
-                id="name"
-                name="name"
-                placeholder="Jane Doe"
+                id='name'
+                name='name'
+                placeholder='Jane Doe'
                 aria-invalid={!!state?.errors?.name}
               />
               {state?.errors?.name && (
-                <p className="text-sm text-destructive" role="alert">
+                <p className='text-sm text-destructive' role='alert'>
                   {state.errors.name}
                 </p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Your email</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='email'>Your email</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="jane@example.com"
+                id='email'
+                name='email'
+                type='email'
+                placeholder='jane@example.com'
                 aria-invalid={!!state?.errors?.email}
-                autoComplete="email"
+                autoComplete='email'
               />
               {state?.errors?.email && (
-                <p className="text-sm text-destructive" role="alert">
+                <p className='text-sm text-destructive' role='alert'>
                   {state.errors.email}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="subject">Subject</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='subject'>Subject</Label>
             <Input
-              id="subject"
-              name="subject"
-              placeholder="How can we help?"
+              id='subject'
+              name='subject'
+              placeholder='How can we help?'
               aria-invalid={!!state?.errors?.subject}
             />
             {state?.errors?.subject && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className='text-sm text-destructive' role='alert'>
                 {state.errors.subject}
               </p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='message'>Message</Label>
             <Textarea
-              id="message"
-              name="message"
-              placeholder="Tell us a bit more about what you need..."
-              className="min-h-[120px]"
+              id='message'
+              name='message'
+              placeholder='Tell us a bit more about what you need...'
+              className='min-h-[120px]'
               aria-invalid={!!state?.errors?.message}
             />
             {state?.errors?.message && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className='text-sm text-destructive' role='alert'>
                 {state.errors.message}
               </p>
             )}
@@ -133,27 +133,27 @@ export default function ContactForm() {
           {state?.message && !hasSubmitted && (
             <Alert
               variant={state.ok ? 'default' : 'destructive'}
-              aria-live="polite"
-              aria-atomic="true"
+              aria-live='polite'
+              aria-atomic='true'
             >
               <AlertTitle>{state.ok ? 'Message sent' : 'There was a problem'}</AlertTitle>
               <AlertDescription>{state.message}</AlertDescription>
             </Alert>
           )}
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Button type="submit">
-              <Send className="mr-2 h-4 w-4" aria-hidden="true" />
+          <div className='flex flex-wrap items-center gap-3 pt-2'>
+            <Button type='submit'>
+              <Send className='mr-2 h-4 w-4' aria-hidden='true' />
               Send message
             </Button>
-            <Button variant="outline" type="button" asChild>
+            <Button variant='outline' type='button' asChild>
               <a
                 href={`mailto:${supportEmail}?subject=${encodeURIComponent(
                   'Support request'
                 )}&body=${encodeURIComponent('Hi Acme team,\n\nI need help with ...\n\nThanks!')}`}
-                aria-label="Email us directly"
+                aria-label='Email us directly'
               >
-                <Mail className="mr-2 h-4 w-4" aria-hidden="true" />
+                <Mail className='mr-2 h-4 w-4' aria-hidden='true' />
                 Email us instead
               </a>
             </Button>
@@ -161,5 +161,5 @@ export default function ContactForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

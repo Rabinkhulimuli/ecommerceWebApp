@@ -1,65 +1,65 @@
-import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Smartphone, Headphones, Watch, Camera } from "lucide-react"
+import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
+import { Smartphone, Headphones, Watch, Camera } from 'lucide-react';
 
 const categories = [
   {
-    name: "Electronics",
+    name: 'Electronics',
     icon: Smartphone,
-    href: "/categories/electronics",
-    color: "from-blue-500 to-blue-600",
+    href: '/categories/electronics',
+    color: 'from-blue-500 to-blue-600',
   },
   {
-    name: "Audio",
+    name: 'Audio',
     icon: Headphones,
-    href: "/categories/audio",
-    color: "from-purple-500 to-purple-600",
+    href: '/categories/audio',
+    color: 'from-purple-500 to-purple-600',
   },
   {
-    name: "Wearables",
+    name: 'Wearables',
     icon: Watch,
-    href: "/categories/wearables",
-    color: "from-green-500 to-green-600",
+    href: '/categories/wearables',
+    color: 'from-green-500 to-green-600',
   },
   {
-    name: "Photography",
+    name: 'Photography',
     icon: Camera,
-    href: "/categories/photography",
-    color: "from-orange-500 to-orange-600",
+    href: '/categories/photography',
+    color: 'from-orange-500 to-orange-600',
   },
-]
+];
 
 export function FeaturedCategories() {
   return (
-    <section className="py-16 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-          <p className="text-gray-600">Find exactly what you're looking for</p>
+    <section className='bg-gray-50 px-4 py-16'>
+      <div className='mx-auto max-w-7xl'>
+        <div className='mb-12 text-center'>
+          <h2 className='mb-4 text-3xl font-bold text-gray-900'>Shop by Category</h2>
+          <p className='text-gray-600'>Find exactly what you're looking for</p>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {categories.map((category) => {
-            const Icon = category.icon
+        <div className='grid gap-6 sm:grid-cols-2 md:grid-cols-4'>
+          {categories.map(category => {
+            const Icon = category.icon;
             return (
               <Link key={category.name} href={category.href}>
-                <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
-                  <CardContent className="p-6 text-center">
+                <Card className='group cursor-pointer transition-all duration-300 hover:shadow-lg'>
+                  <CardContent className='p-6 text-center'>
                     <div
-                      className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center group-hover:scale-110 transition-transform`}
+                      className={`mx-auto mb-4 h-16 w-16 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center transition-transform group-hover:scale-110`}
                     >
-                      <Icon className="h-8 w-8 text-white" />
+                      <Icon className='h-8 w-8 text-white' />
                     </div>
-                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <h3 className='font-semibold text-gray-900 transition-colors group-hover:text-blue-600'>
                       {category.name}
                     </h3>
                   </CardContent>
                 </Card>
               </Link>
-            )
+            );
           })}
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -1,15 +1,15 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "@/lib/prisma";
-import { compare } from "bcryptjs";
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import prisma from '@/lib/prisma';
+import { compare } from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "email", type: "text" },
-        password: { label: "password", type: "password" },
+        email: { label: 'email', type: 'text' },
+        password: { label: 'password', type: 'password' },
       },
       async authorize(credentials) {
         const user = await prisma.user.findUnique({
@@ -17,12 +17,11 @@ export const authOptions: NextAuthOptions = {
           include: { image: true },
         });
 
-        if (!user) throw new Error("User not found");
-        if (!credentials?.password || !user.password)
-          throw new Error("Password is empty");
+        if (!user) throw new Error('User not found');
+        if (!credentials?.password || !user.password) throw new Error('Password is empty');
 
         const isValid = await compare(credentials.password, user.password);
-        if (!isValid) throw new Error("Invalid password");
+        if (!isValid) throw new Error('Invalid password');
 
         // ✅ Only return plain JSON-safe values
         return {
@@ -37,7 +36,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 
   callbacks: {

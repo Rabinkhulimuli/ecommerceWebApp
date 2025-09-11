@@ -1,10 +1,10 @@
-import OrdersPage from '@/components/order/OrderPage'
-import React from 'react'
+import OrdersPage from '@/components/order/OrderPage';
+import React from 'react';
 
 export default function page() {
   return (
     <div>
-        <OrdersPage/>
+      <OrdersPage />
     </div>
-  )
+  );
 }

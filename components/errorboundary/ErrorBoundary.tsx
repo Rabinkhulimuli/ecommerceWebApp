@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { Component, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import React, { Component, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -12,10 +12,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-export default class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error) {
@@ -23,7 +20,7 @@ export default class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: any) {
-    console.error("Global Error Caught:", error, info);
+    console.error('Global Error Caught:', error, info);
   }
 
   handleReset = () => {
@@ -32,41 +29,31 @@ export default class ErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError) {
-      return (
-        <ErrorModal error={this.state.error?.message} onReset={this.handleReset} />
-      );
+      return <ErrorModal error={this.state.error?.message} onReset={this.handleReset} />;
     }
 
     return this.props.children;
   }
 }
 
-const ErrorModal = ({
-  error,
-  onReset,
-}: {
-  error?: string;
-  onReset: () => void;
-}) => {
+const ErrorModal = ({ error, onReset }: { error?: string; onReset: () => void }) => {
   const router = useRouter();
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center animate-fade-in">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">
-          Something went wrong
-        </h2>
-        <p className="text-gray-700 mb-6">{error || "An unexpected error occurred."}</p>
-        <div className="flex justify-center gap-4">
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+      <div className='animate-fade-in w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-xl'>
+        <h2 className='mb-4 text-2xl font-bold text-red-600'>Something went wrong</h2>
+        <p className='mb-6 text-gray-700'>{error || 'An unexpected error occurred.'}</p>
+        <div className='flex justify-center gap-4'>
           <button
             onClick={onReset}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+            className='rounded-lg bg-red-600 px-6 py-2 text-white transition hover:bg-red-700'
           >
             Try Again
           </button>
           <button
-            onClick={() => router.push("/")}
-            className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+            onClick={() => router.push('/')}
+            className='rounded-lg bg-gray-200 px-6 py-2 text-gray-800 transition hover:bg-gray-300'
           >
             Back to Home
           </button>

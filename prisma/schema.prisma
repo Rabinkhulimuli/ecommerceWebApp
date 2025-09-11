@@ -1,214 +1,213 @@
-
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
+
 model PushSubscription {
-  id            String   @id @default(cuid())
-  endpoint      String   @unique
-  keys          Json
-  expirationTime DateTime? // Using BigInt to store the numeric value
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String    @id @default(cuid())
+  endpoint       String    @unique
+  keys           Json
+  expirationTime DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
+
 model Session {
-  id    String @id @default(cuid())
-  sid           String @unique
-  data         String
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([expiresAt])
 }
+
 model User {
-  id String @default(cuid()) @id
-  email String @unique
-  name String?
-  password String?
-  image Image?  @relation(fields: [imageId],references: [id])
-  imageId String? @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role Role @default(USER)
-  order Order[] 
-  cartItems CartItem[] 
-  reviews Review[]
-  addresses Address[] @relation("UserAddresses")
-  wishlist WishList[]
-  feedback Feedback[]
-  views View[]
-  @@index([email]) // Faster user lookups
-@@index([createdAt]) // For time-based queries
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  password  String?
+  imageId   String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  role      Role       @default(USER)
+  addresses Address[]  @relation("UserAddresses")
+  cartItems CartItem[]
+  feedback  Feedback[]
+  order     Order[]
+  reviews   Review[]
+  image     Image?     @relation(fields: [imageId], references: [id])
+  views     View[]
+  wishlist  WishList[]
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([name]) // For user search functionality
 }
-enum Role {
-  USER
-  ADMIN
-}
+
 model Order {
-id          String      @id @default(uuid())
-  user        User        @relation(fields: [userId], references: [id],onDelete: Cascade)
-  userId      String
-  totalPrice  Decimal
-  status      OrderStatus @default(PENDING)
+  id         String      @id @default(uuid())
+  userId     String
+  totalPrice Decimal
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now())
+  shippingId String?
+  updatedAt  DateTime    @updatedAt
+  shipping   Address?    @relation(fields: [shippingId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+  payment    Payment?
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  userId     String
+  street     String
+  city       String
+  country    String
+  postalCode String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  user       User     @relation("UserAddresses", fields: [userId], references: [id], onDelete: Cascade)
+  order      Order[]
+
+  @@unique([userId, isPrimary], name: "OnlyOnePrimaryAddressPerUser")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Decimal
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  orderId       String        @unique
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod
+  transactionId String
+  createdAt     DateTime      @default(now())
+  order         Order         @relation(fields: [orderId], references: [id])
+}
+
+model OTP {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt  DateTime @default(now())
+  @@index([email, createdAt]) // For OTP cleanup jobs
+  @@index([expiresAt]) // For expired OTP cleanup
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  price       Decimal
+  stock       Int
+  discount    Decimal
+  categoryId  String
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-
-  // Relations
+  cartItems   CartItem[]
+  images      Image[]
   orderItems  OrderItem[]
-  payment     Payment?
-  shipping    Address?    @relation(fields: [shippingId], references: [id])
-  shippingId  String?
-  @@index([userId]) // User order history
-@@index([status]) // Filtering by status
-@@index([createdAt]) // Time-based reporting
+  category    Category    @relation(fields: [categoryId], references: [id])
+  reviews     Review[]
+  views       View[]
+  wishlist    WishList[]
+  isActive    Boolean   @default(true)
+  @@index([price])
+  @@index([categoryId])
+  @@index([createdAt])
+  @@index([name]) // For product search
+  @@index([stock]) // For inventory management
 }
-enum OrderStatus{
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELED
-}
-model Address{
-  id String @id @default(uuid())
-  user User @relation("UserAddresses",fields: [userId],references: [id],onDelete: Cascade)
-  userId String
-  street String
-  city String
-  country String
-  postalCode String
-  isPrimary Boolean @default(false)
-  order Order[]
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-  @@unique([userId,isPrimary],name:"OnlyOnePrimaryAddressPerUser")
-}
-model OrderItem{
-  id String @default(uuid()) @id
-  order Order @relation(fields:[orderId],references:[id],onDelete:Cascade)
-  orderId String
-  product Product @relation(fields:[productId],references: [id],onDelete: Cascade)
-  productId String
-  quantity Int
-  price Decimal
-  @@index([productId]) // Product sales analysis
-}
-model Payment{
-  id String @default(uuid()) @id
-  order Order @relation(fields:[orderId],references: [id])
-  orderId String @unique
-  status PaymentStatus @default(PENDING)
-  method PaymentMethod
-  transactionId String
-  createdAt DateTime @default(now())
-}
-enum PaymentStatus{
-    PENDING
-    COMPLETED
-    FAILED
-}
-enum PaymentMethod{
-  CASH_ON_DELIVERY
-  CREDIT_CARD
-  BANK_TRANSFER
-  PAYPAL
-}
-model OTP{
-  id String @id @default(uuid())
-  email String
-  code String
-  expiresAt DateTime
-}
-model Product{
-  id String @default(uuid()) @id
-  name String 
-  description String
-  price Decimal
-  stock Int
-  discount Decimal
-  category Category @relation(fields:[categoryId],references: [id])
-  categoryId String
-  images Image[] //multiple images
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  reviews Review[]
-  cartItems CartItem[]
-  orderItems OrderItem[]
-  wishlist WishList[]
-  views View[]
-  @@index([price]) // For price filtering
-@@index([categoryId]) // Faster category-based queries
-@@index([createdAt]) // New products sorting
 
-}
-model Image{
-  id  String @id @default(cuid())
-  url String
-  publicId String
-  product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
+model Image {
+  id        String   @id @default(cuid())
+  url       String
+  publicId  String
   productId String?
-  user User? @relation
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User?
 }
-model WishList{
-  id String @id @default(uuid())
-  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-  userId String
-  product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+
+model WishList {
+  id        String   @id @default(uuid())
+  userId    String
   productId String
   createdAt DateTime @default(now())
-  @@unique([userId,productId])
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
 }
+
 model View {
   id        String   @id @default(cuid())
   userId    String
   productId String
   viewedAt  DateTime @default(now())
-  
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, productId])
-  @@index([viewedAt]) // Recent views analysis
-@@index([productId, viewedAt]) // Product popularity:cite[10]
-}
-model Category{
-  id String @default(uuid()) @id
-  name String @unique
-  products Product[]
-}
-model Review{
-  id String @default(uuid()) @id
-  user User @relation(fields: [userId],references: [id])
-  userId String
-  product Product @relation(fields: [productId],references: [id])
-  productId String
-  rating Int //<5
-  comment String?
-  createdAt DateTime @default(now())
-  @@index([productId]) // Product reviews
-@@index([rating]) // Rating analysis
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, productId])
+  @@index([viewedAt])
+  @@index([productId, viewedAt])
 }
-model CartItem{
-  id String @id @default(uuid())
-  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-  userId String
-  product Product @relation(fields: [productId],references: [id])
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+  description String?   // Added for SEO
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
   productId String
-  quantity Int 
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([rating])
+  @@index([createdAt]) // For recent reviews
 }
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Feedback {
   id        String   @id @default(cuid())
   name      String
@@ -216,7 +215,33 @@ model Feedback {
   subject   String
   message   String
   imageUrl  String?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
   userId    String
-  user  User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  CREDIT_CARD
+  BANK_TRANSFER
+  PAYPAL
 }

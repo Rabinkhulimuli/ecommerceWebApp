@@ -1,11 +1,9 @@
 // app/api/products/create-product/route.ts
-import { NextResponse } from "next/server";
-import cloudinary from "@/lib/cloudinary";
-import prisma from "@/lib/prisma";
-import { DefaultSession, getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
-
-
+import { NextResponse } from 'next/server';
+import cloudinary from '@/lib/cloudinary';
+import prisma from '@/lib/prisma';
+import { DefaultSession, getServerSession } from 'next-auth';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function POST(request: Request) {
   try {
@@ -13,56 +11,45 @@ export async function POST(request: Request) {
     const userId = session?.user.id;
     const formData = await request.formData();
     if (!userId) {
-      return NextResponse.json(
-        { error: "user mut sign in first " },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'user mut sign in first ' }, { status: 400 });
     }
     // Extract product data
     const productData = {
-      name: formData.get("name")?.toString() || "",
-      categoryId: formData.get("categoryId")?.toString() || "",
-      price: Number(formData.get("price")) || 0,
-      description: formData.get("description")?.toString() || "",
-      stock: Number(formData.get("stock")) || 0,
-      discount: Number(formData.get("discount") || 0),
+      name: formData.get('name')?.toString() || '',
+      categoryId: formData.get('categoryId')?.toString() || '',
+      price: Number(formData.get('price')) || 0,
+      description: formData.get('description')?.toString() || '',
+      stock: Number(formData.get('stock')) || 0,
+      discount: Number(formData.get('discount') || 0),
     };
-    console.log("product data", productData);
+    console.log('product data', productData);
     const category = await prisma.category.findUnique({
       where: { id: productData.categoryId },
     });
 
     if (!category) {
-      return NextResponse.json(
-        { error: "Invalid category ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid category ID' }, { status: 400 });
     }
 
     // Get all files (handles both single and multiple files)
-    const files = formData
-      .getAll("images")
-      .filter((item): item is File => item instanceof File);
+    const files = formData.getAll('images').filter((item): item is File => item instanceof File);
 
     if (files.length === 0) {
-      console.error("No valid files found in the request");
-      return NextResponse.json(
-        { error: "No valid files were uploaded" },
-        { status: 400 }
-      );
+      console.error('No valid files found in the request');
+      return NextResponse.json({ error: 'No valid files were uploaded' }, { status: 400 });
     }
 
     // Upload files to Cloudinary
 
     const uploadResults = await Promise.all(
-      files.map(async (file) => {
+      files.map(async file => {
         try {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const base64String = buffer.toString("base64");
+          const base64String = buffer.toString('base64');
           const dataUri = `data:${file.type};base64,${base64String}`;
 
           const uploadResult = await cloudinary.uploader.upload(dataUri, {
-            folder: "nextjs-products",
+            folder: 'nextjs-products',
           });
 
           return {
@@ -82,11 +69,11 @@ export async function POST(request: Request) {
 
     if (successfulUploads.length === 0) {
       return NextResponse.json(
-        { error: "Failed to upload any images to Cloudinary" },
+        { error: 'Failed to upload any images to Cloudinary' },
         { status: 500 }
       );
     }
-    console.log("Final product payload", {
+    console.log('Final product payload', {
       ...productData,
       images: successfulUploads,
     });
@@ -102,7 +89,7 @@ export async function POST(request: Request) {
         discount: productData.discount,
         images: {
           createMany: {
-            data: successfulUploads.map((upload) => ({
+            data: successfulUploads.map(upload => ({
               url: upload.url as string,
               publicId: upload.publicId as string,
             })),
@@ -119,10 +106,7 @@ export async function POST(request: Request) {
       images: successfulUploads,
     });
   } catch (error) {
-    console.error("Server error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error('Server error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

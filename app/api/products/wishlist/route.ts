@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 // Add to wishlist
 export async function POST(request: Request) {
@@ -8,10 +8,7 @@ export async function POST(request: Request) {
     const { userId, productId } = body;
 
     if (!userId || !productId) {
-      return NextResponse.json(
-        { error: "Missing userId or productId" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing userId or productId' }, { status: 400 });
     }
 
     const wishlistItem = await prisma.wishList.upsert({
@@ -25,20 +22,17 @@ export async function POST(request: Request) {
     return NextResponse.json(wishlistItem, { status: 201 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
 
 // Get wishlist for a user
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get("userId");
+  const userId = searchParams.get('userId');
 
   if (!userId) {
-    return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
   }
 
   const wishlist = await prisma.wishList.findMany({
@@ -49,9 +43,9 @@ export async function GET(request: Request) {
           id: true,
           name: true,
           price: true,
-          stock:true,
-          images:true
-        }
+          stock: true,
+          images: true,
+        },
       },
     }, // fetch product details
   });
@@ -66,25 +60,16 @@ export async function DELETE(request: Request) {
     const { userId, productId } = body;
 
     if (!userId || !productId) {
-      return NextResponse.json(
-        { error: "Missing userId or productId" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing userId or productId' }, { status: 400 });
     }
 
     await prisma.wishList.delete({
       where: { userId_productId: { userId, productId } },
     });
 
-    return NextResponse.json(
-      { message: "Removed from wishlist" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Removed from wishlist' }, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
