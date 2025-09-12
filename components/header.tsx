@@ -481,11 +481,16 @@ export default function Header() {
           <Link
             href='/products/cart'
             onClick={handleMenuOpen}
-            className={`flex items-center gap-5 hover:text-blue-600 ${
+            className={`flex items-center gap-5 hover:text-blue-600  ${
               pathname == '/products/cart' ? 'text-rose-600' : ''
             }`}
           >
             <span> Cart</span>
+            {itemCounts() !== null && (
+                  <Badge className=' flex px-2  items-center justify-center rounded-md  text-xs'>
+                    {itemCounts()}
+                  </Badge>
+                )}
             {pathname == '/products/cart' && (
               <span>
                 <Sparkles className='h-5 w-5' />{' '}

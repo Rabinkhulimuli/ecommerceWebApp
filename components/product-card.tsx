@@ -54,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
             -{product.discount.toString()}%
           </Badge>
         )}
-        <div className='absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100'>
+        <div className='absolute right-2 top-2 sm:opacity-0 transition-opacity group-hover:opacity-100 '>
           <WishlistButton productId={product.id} userId={userId} />
         </div>
       </div>

@@ -102,7 +102,7 @@ model Payment {
   orderId       String        @unique
   status        PaymentStatus @default(PENDING)
   method        PaymentMethod
-  transactionId String
+  transactionId String?
   createdAt     DateTime      @default(now())
   order         Order         @relation(fields: [orderId], references: [id])
 }
@@ -244,4 +244,5 @@ enum PaymentMethod {
   CREDIT_CARD
   BANK_TRANSFER
   PAYPAL
+  ESEWA
 }

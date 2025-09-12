@@ -81,6 +81,7 @@ export type sessionUsertype = {
   role?:string;
 } | null;
 export interface Address {
+  id:string
   firstName: string;
   lastName: string;
   email: string;
@@ -90,6 +91,13 @@ export interface Address {
   street: string;
   postalCode: string;
   country: string;
+  isPrimary:boolean
+  shippingId?:string
+  paymentMethod?:"CASH_ON_DELIVERY"|
+  "CREDIT_CARD"|
+"BANK_TRANSFER"|
+  "PAYPAL"|
+  "ESEWA"
 }
 export type getUserResType = {
   name: string;
@@ -122,13 +130,13 @@ export interface UserWithInteractions extends PrismaUser {
   views: View[];
 }
 
-export interface ProductWithDetails extends Product {
-  images?: any[];
-  category?: any;
-}
+// export interface ProductWithDetails extends Product {
+//   images?: any[];
+//   category?: any;
+// }
 
 export interface RecommendationResult {
-  products: ProductWithDetails[];
+  products: ProductType[];
   generatedAt: Date;
   source: 'algorithm' | 'fallback';
 }

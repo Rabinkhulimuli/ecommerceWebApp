@@ -9,15 +9,17 @@ import { useToast } from '../ui/use-toast';
 export default function CreateProductForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [productData, setProductData] = useState({
-    name: '',
-    description: '',
-    price: 0,
-    stock: 0,
-    categoryId: '',
-    images: [] as File[],
-    discount: 0,
-  });
+  const [resetKey, setResetKey] = useState(0);
+  const initialState = {
+  name: '',
+  description: '',
+  price: 0,
+  stock: 0,
+  categoryId: '',
+  images: [] as File[],
+  discount: 0,
+};
+  const [productData, setProductData] = useState(initialState);
   const { toast } = useToast();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -62,8 +64,8 @@ export default function CreateProductForm() {
           title: 'Success',
           description: 'Successfully items created',
         });
-        console.log(response.json());
-        router.push('/products');
+        setProductData(initialState)
+        setResetKey((prev)=> prev+1)
       } else {
         toast({
           title: 'Error',
@@ -200,7 +202,7 @@ export default function CreateProductForm() {
             {/* Image Upload Section */}
             <div className='sm:space-y-4'>
               <h2 className='text-lg font-semibold text-gray-700'>Product Images</h2>
-              <ImageUploader onUpload={handleImageUpload} />
+              <ImageUploader key={resetKey} onUpload={handleImageUpload} />
             </div>
 
             {/* Form Actions */}

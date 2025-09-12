@@ -1,7 +1,7 @@
 
 import { cache } from 'react';
 import prisma from './prisma';
-import { UserWithInteractions, ProductWithDetails, RecommendationResult } from './types';
+import { UserWithInteractions, RecommendationResult, ProductType } from './types';
 
 // Move cosineSim function outside to avoid ES5 strict mode issues
 function cosineSim(a: number[], b: number[]): number {
@@ -12,7 +12,7 @@ function cosineSim(a: number[], b: number[]): number {
 }
 
 // Fallback function to get popular products
-const getPopularProducts = cache(async (limit: number): Promise<ProductWithDetails[]> => {
+const getPopularProducts = cache(async (limit: number): Promise<ProductType[]> => {
   return prisma.product.findMany({
     take: limit,
     orderBy: { 
@@ -20,7 +20,6 @@ const getPopularProducts = cache(async (limit: number): Promise<ProductWithDetai
     },
     include: {
       images: true,
-      category: true,
     }
   });
 });
@@ -30,7 +29,7 @@ export const getUserRecommendations = cache(async (userId: string, limit = 5): P
   try {
     // Step 1: Get active users with recent interactions (last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
+    console.log("popularity base user recommendation running ")
     const [products, users] = await Promise.all([
       prisma.product.findMany({ 
         select: { id: true },
@@ -169,12 +168,11 @@ export const getUserRecommendations = cache(async (userId: string, limit = 5): P
       where: { id: { in: sortedRecommendations } },
       include: {
         images: true,
-        category: true,
       }
     })
 
     return {
-      products: recommendedProducts as ProductWithDetails[],
+      products: recommendedProducts as ProductType[],
       generatedAt: new Date(),
       source: 'algorithm'
     }

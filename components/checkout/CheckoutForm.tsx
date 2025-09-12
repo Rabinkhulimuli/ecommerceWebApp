@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,12 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, Truck, Package } from 'lucide-react';
+import { CreditCard, Truck, Package, Wallet } from 'lucide-react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Address, CartItemResponsetype } from '@/lib/types';
 import { useGetUser } from '@/services/user.service';
 import FormSkeleton from './UserForm';
-import Esewa from '../esewa/Esewa';
 import { useRouter } from 'next/navigation';
 import { useClearCart } from '@/services/cart.service';
 import { useSession } from 'next-auth/react';
@@ -43,44 +41,126 @@ export function CheckoutForm({ step, onNext, total, cartItems }: CheckoutFormPro
       country: '',
       street: '',
       city: '',
+      shippingId:'',
     },
   });
 
-  useEffect(() => {
-    if (userData) {
-      const nameSplit = userData.name?.split(' ') ?? [];
-      setValue('firstName', nameSplit[0] || '');
-      setValue('lastName', nameSplit[1] || '');
-      setValue('email', userData.email || '');
-      setValue('postalCode', userData.addresses?.[0]?.postalCode || '');
-      setValue('country', userData.addresses?.[0]?.country || '');
-      setValue('street', userData.addresses?.[0]?.street || '');
-      setValue('city', userData.addresses?.[0]?.city || '');
-    }
-  }, [userData, setValue]);
+ const [isPrimary, setIsPrimary] = useState(true);
+ const [paymentMethod, setPaymentMethod] = useState(localStorage.getItem("paymentMethod")||"CASH_ON_DELIVERY");
+useEffect(() => {
+  if (!userData) return;
 
-  const onSubmit: SubmitHandler<Address> = async () => {
+  const nameSplit = userData.name?.split(' ') ?? [];
+  setValue('firstName', nameSplit[0] || '');
+  setValue('lastName', nameSplit[1] || '');
+  setValue('email', userData.email || '');
+
+  let addressToUse: typeof userData.addresses[0] | undefined;
+
+  if (isPrimary) {
+    addressToUse = userData.addresses.find(addr => addr.isPrimary);
+  } else {
+    addressToUse =
+      userData.addresses.find(addr => !addr.isPrimary) ||
+      userData.addresses.find(addr => addr.isPrimary);
+  }
+
+  if (addressToUse) {
+    setValue('postalCode', addressToUse.postalCode || '');
+    setValue('country', addressToUse.country || '');
+    setValue('street', addressToUse.street || '');
+    setValue('city', addressToUse.city || '');
+    setIsPrimary(addressToUse.isPrimary);
+    setValue('shippingId',addressToUse.id)
+  }
+}, [userData, isPrimary, setValue]);
+
+
+  const onSubmit: SubmitHandler<Address> = async (data) => {
+    if(step==='payment'){
+      localStorage.setItem("paymentMethod",paymentMethod)
+    }
+     if (step === 'shipping') {
+    if (!userData) return;
+
+    // Determine which address is being used
+    const addressToCompare = isPrimary
+      ? userData.addresses.find(addr => addr.isPrimary)
+      : userData.addresses.find(addr => !addr.isPrimary);
+
+    const hasChanged =
+      !addressToCompare ||
+      addressToCompare.city !== data.city ||
+      addressToCompare.country !== data.country ||
+      addressToCompare.postalCode !== data.postalCode ||
+      addressToCompare.street !== data.street;
+
+    if (hasChanged) {
+      try {
+        const res = await fetch('/api/user/update-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address: data }),
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to update address');
+        }
+
+        const result = await res.json();
+        console.log("address resp",result)
+        toast({
+          title: 'Address updated!',
+          description: 'Your shipping address has been saved.',
+        });
+
+       
+        setValue('city', result.address.city);
+        setValue('country', result.address.country);
+        setValue('street', result.address.street);
+        setValue('postalCode', result.address.postalCode);
+        setValue('shippingId',result.address.id)
+
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: 'Address update failed',
+          description: 'Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+  }
     if (step === 'review') {
       setIsProcessing(true);
-      // await new Promise((resolve) => setTimeout(resolve, 2000))
+      if(!data.shippingId){
+        setIsProcessing(false)
+        return
+      }
+      const payMethod=localStorage.getItem("paymentMethod")
       try {
-        const data = await fetch('/api/orders/place-order', {
+        const res = await fetch('/api/orders/place-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             items: cartItems,
+            shippingId:data.shippingId,
+            paymentMethod:payMethod||paymentMethod
           }),
         });
-        if (data.ok) {
+        if (res.ok) {
           toast({
             title: 'Order placed successfully!',
             description:
               "Thank you for your purchase. You'll receive a confirmation email shortly.",
           });
-
+          const orderData= await res.json()
+          console.log("orderId from place order",orderData)
           if (userId) clearCartItems(userId);
+          localStorage.removeItem("paymentMethod")
           setIsProcessing(false);
-          router.push(`/orders/order-success?price=${total}`);
+          router.push(`/orders/order-success?price=${total}&product=${orderData.id}`);
         } else {
           toast({
             title: 'Order failed place',
@@ -98,18 +178,31 @@ export function CheckoutForm({ step, onNext, total, cartItems }: CheckoutFormPro
         });
         setIsProcessing(false);
       }
-    } else {
+    } 
+
       onNext?.();
-    }
+
   };
 
   if (step === 'shipping') {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
+          <CardTitle className='flex flex-col gap-2'>
+            <span className='flex gap-1'>
+
             <Truck className='hidden h-5 w-5 sm:block' />
             <span className='text-nowrap tracking-tight'>Shipping Information</span>
+            </span>
+            <div className='flex gap-1 items-center border shadow-md font-semibold text-xl w-fit rounded-md'>
+
+            <button onClick={()=> setIsPrimary(true)} className={`px-4 py-1 w-fit rounded-md ${isPrimary?"bg-rose-200 ":""}`}>
+              Primary Address
+            </button>
+           {userData&&userData.addresses.length>1&& <button onClick={()=> setIsPrimary(false)}  className={` px-4 py-1 w-fit rounded-md ${isPrimary?"":"bg-rose-200"}`}>
+              Secondary Address
+            </button>}
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -120,17 +213,17 @@ export function CheckoutForm({ step, onNext, total, cartItems }: CheckoutFormPro
               <div className='grid gap-4 md:grid-cols-2'>
                 <div>
                   <Label htmlFor='firstName'>First Name</Label>
-                  <Input id='firstName' required {...register('firstName')} />
+                  <Input id='firstName' required {...register('firstName')} disabled/>
                 </div>
                 <div>
                   <Label htmlFor='lastName'>Last Name</Label>
-                  <Input id='lastName' required {...register('lastName')} />
+                  <Input id='lastName' required {...register('lastName')} disabled />
                 </div>
               </div>
 
               <div>
                 <Label htmlFor='email'>Email</Label>
-                <Input id='email' type='email' required {...register('email')} />
+                <Input id='email' type='email' required {...register('email')} disabled />
               </div>
 
               <div className='text-capitalize grid gap-4 md:grid-cols-3'>
@@ -163,21 +256,41 @@ export function CheckoutForm({ step, onNext, total, cartItems }: CheckoutFormPro
     );
   }
 
-  if (step === 'payment') {
+ if (step === "payment") {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
-            <CreditCard className='h-5 w-5' />
-            <span>Payment</span>
+          <CardTitle className="flex items-center space-x-2">
+            <CreditCard className="h-5 w-5" />
+            <span>Select Payment Method</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Replace with your Esewa integration */}
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Esewa total_amount={total ?? 0} />
-            <Button type='submit' className='mt-4 w-full'>
-              Review Order
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <RadioGroup  value={paymentMethod} onValueChange={setPaymentMethod}>
+              <div className="flex items-center space-x-2 border p-3 rounded-lg">
+                <RadioGroupItem value="CASH_ON_DELIVERY" id="cod" />
+                <Label htmlFor="cod">Cash on Delivery</Label>
+              </div>
+              <div className="flex items-center space-x-2 border p-3 rounded-lg">
+                <RadioGroupItem value="CREDIT_CARD" id="card" />
+                <Label htmlFor="card">Credit / Debit Card</Label>
+              </div>  
+              <div className="flex items-center space-x-2 border p-3 rounded-lg">
+                <RadioGroupItem value="BANK_TRANSFER" id="banktransfer" />
+                <Label htmlFor="card">Bank transfer</Label>
+              </div>
+              <div className="flex items-center space-x-2 border p-3 rounded-lg">
+                <RadioGroupItem value="PAYPAL" id="paypal" />
+                <Label htmlFor="card">Paypal</Label>
+              </div>
+              <div className="flex items-center space-x-2 border p-3 rounded-lg">
+                <RadioGroupItem value="ESEWA" id="esewa" />
+                <Label htmlFor="esewa">eSewa (will be processed after order)</Label>
+              </div>
+            </RadioGroup>
+            <Button type="submit" className="w-full">
+              Continue to Review
             </Button>
           </form>
         </CardContent>
@@ -209,7 +322,7 @@ export function CheckoutForm({ step, onNext, total, cartItems }: CheckoutFormPro
 
           <div>
             <h3 className='mb-2 font-semibold'>Payment Method</h3>
-            <p className='text-sm text-gray-600'>eSewa</p>
+            <p className='text-sm text-gray-600'>{localStorage.getItem("paymentMethod")||paymentMethod} </p>
           </div>
 
           <div className='mt-4 flex justify-between'>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { Badge } from '../ui/badge';
 
 type OrderWithItems = {
   id: string;
@@ -43,6 +44,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     if (!userId) return;
 
@@ -59,83 +61,105 @@ export default function OrdersPage() {
       });
   }, [userId]);
 
-  if (loading) return <p>Loading orders...</p>;
-  if (!orders.length) return <p>No orders found.</p>;
+  if (loading) return <p className="text-center py-10">Loading orders...</p>;
+  if (!orders.length) return <p className="text-center py-10">No orders found.</p>;
 
   return (
-    <div className='container mx-auto px-4 py-8'>
-      <h1 className='mb-6 text-3xl font-bold'>My Orders</h1>
-      <div className='space-y-6'>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-8 text-3xl font-bold text-center">My Orders</h1>
+      <div className="space-y-6">
         {orders.map(order => (
-          <Card key={order.id}>
-            <CardHeader>
-              <CardTitle className=''>
-                Order #{order.id} — {new Date(order.createdAt).toLocaleDateString()}
+          <Card key={order.id} className="shadow-lg rounded-xl border border-gray-200">
+            <CardHeader className="bg-gray-50 rounded-t-xl">
+              <CardTitle className="flex justify-between items-center text-lg md:text-xl font-semibold">
+                <span>Order #{order.id}</span>
+                <span className="text-gray-500 text-sm">
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </span>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className='mb-4'>
-                <h3 className='font-semibold'>Shipping Address:</h3>
+
+            <CardContent className="space-y-4">
+              {/* Shipping Info */}
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="font-semibold mb-1">Shipping Address</h3>
                 {order.shipping ? (
-                  <p>
+                  <p className="text-gray-700 text-sm">
                     {order.shipping.street}, {order.shipping.city}, {order.shipping.postalCode},{' '}
                     {order.shipping.country}
                   </p>
                 ) : (
-                  <p>No shipping info</p>
+                  <p className="text-gray-500 text-sm">No shipping info</p>
                 )}
               </div>
 
-              <div className='mb-4'>
-                <h3 className='font-semibold'>Items:</h3>
-                <ul className='shadow--md grid justify-between rounded-md border px-4 md:grid-cols-2'>
+              {/* Order Items */}
+              <div className="overflow-x-auto">
+                <h3 className="font-semibold mb-2">Items</h3>
+                <ul className="grid gap-4 md:grid-cols-2">
                   {order.orderItems.map(item => (
                     <li
-                      onClick={() => router.push(`/products/${item.product.id}`)}
                       key={item.id}
-                      className='my-2 flex items-center space-x-4'
+                      onClick={() => router.push(`/products/${item.product.id}`)}
+                      className="flex items-center gap-4 p-3 border rounded-md hover:shadow-md cursor-pointer transition"
                     >
                       <img
                         src={item.product.images[0]?.url || '/placeholder.png'}
                         alt={item.product.name}
-                        className='h-12 w-12 rounded-md object-cover'
+                        className="h-16 w-16 rounded-md object-cover flex-shrink-0"
                       />
-                      <div>
-                        <p className='max-w-32 overflow-hidden overflow-ellipsis text-nowrap sm:max-w-sm'>
-                          {item.product.name}
-                        </p>
-                        <p>Qty: {item.quantity}</p>
-                        <p>Price: {item.price}</p>
+                      <div className="flex flex-col flex-1 overflow-hidden">
+                        <p className="font-medium truncate max-w-32 overflow-hidden overflow-ellipsis text-nowrap sm:max-w-[14.5rem] lg:max-w-[15.5rem] xl:max-w-sm">{item.product.name}</p>
+                        <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
+                        <p className="text-gray-700 font-semibold">Price: ${item.price}</p>
                       </div>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className='mb-4'>
-                <h3 className='font-semibold'>Total Price:</h3>
-                <p>{order.totalPrice}</p>
+              {/* Total & Payment */}
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+                <div>
+                  <h3 className="font-semibold">Total Price</h3>
+                  <p className="text-lg font-bold">${order.totalPrice}</p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                  <h3 className="font-semibold">Payment Status</h3>
+                  {order.payment?.status === 'COMPLETED' ? (
+                    <p className="text-green-600 font-bold">Paid</p>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <p className="text-red-600 font-bold">{order.payment?.status || 'Pending'}</p>
+                      {payingOrderId === order.id ? (
+                        <Esewa total_amount={order.totalPrice} productCode="EPAYTEST" />
+                      ) : (
+                        <Button size="sm" onClick={() => setPayingOrderId(order.id)}>
+                          Pay with eSewa
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className='mb-4'>
-                <h3 className='font-semibold'>Payment Status:</h3>
-                {order.payment?.status === 'COMPLETED' ? (
-                  <p className='font-bold text-green-600'>Paid</p>
-                ) : (
-                  <div>
-                    <p className='font-bold text-red-600'>Pending Payment</p>
-                    {payingOrderId === order.id ? (
-                      <Esewa total_amount={order.totalPrice} />
-                    ) : (
-                      <Button onClick={() => setPayingOrderId(order.id)}>Pay with Esewa</Button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <h3 className='font-semibold'>Order Status:</h3>
-                <p>{order.status}</p>
+              {/* Order Status */}
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-semibold">Order Status:</h3>
+                <Badge
+                  className={`${
+                    order.status === 'DELIVERED'
+                      ? 'bg-green-100 text-green-800'
+                      : order.status === 'SHIPPED'
+                      ? 'bg-blue-100 text-blue-800'
+                      : order.status === 'CANCELED'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}
+                >
+                  {order.status}
+                </Badge>
               </div>
             </CardContent>
           </Card>

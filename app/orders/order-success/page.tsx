@@ -2,15 +2,20 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Package, Truck } from 'lucide-react';
-import { table } from 'console';
+import { CheckCircle, Package, Truck, Wallet } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Esewa from '@/components/esewa/Esewa';
 
 export default function OrderSuccessPage() {
   const searchParams = useSearchParams();
-  const total = searchParams.get('price') || '0.00';
+  const total = searchParams.get('price')
+  const productCode= searchParams.get('product')
+  const router= useRouter()
+  if(!total||Number(total)<=0||!productCode){
+    return router.push("/")
+  }
   return (
-    <div className='container mx-auto max-w-2xl px-4 py-16 text-center'>
+    <div className='container mx-auto max-w-2xl px-4 py-16 space-y-6 text-center'>
       <div className='mb-8'>
         <CheckCircle className='mx-auto mb-6 h-24 w-24 text-green-600' />
         <h1 className='mb-4 text-3xl font-bold text-gray-900'>Order Placed Successfully!</h1>
@@ -27,7 +32,7 @@ export default function OrderSuccessPage() {
           <div className='flex justify-between'>
             <span>Order Number:</span>
             <span className='font-semibold'>
-              #MS-{Math.random().toString(36).substr(2, 9).toUpperCase()}
+              #MS-{productCode}
             </span>
           </div>
           <div className='flex justify-between'>
@@ -73,6 +78,17 @@ export default function OrderSuccessPage() {
           </Button>
         </Link>
       </div>
+      <Card>
+        <CardHeader>
+         <CardTitle className="flex items-center space-x-2">
+            <Wallet className="h-5 w-5" />
+             <span>Pay with eSewa</span>
+           </CardTitle>
+       </CardHeader>
+         <CardContent>
+           <Esewa total_amount={Number(total) ?? 0} productCode={productCode} />
+        </CardContent>
+       </Card>
     </div>
   );
 }

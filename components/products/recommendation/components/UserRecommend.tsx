@@ -1,5 +1,6 @@
 'use client';
 
+import CarouselModel from '../../CarouselModel';
 import { useRecommendations } from '../hooks/useRecommendation';
 
 interface RecommendationListProps {
@@ -14,30 +15,12 @@ export default function UserRecommendationList({
   limit = 5,
 }: RecommendationListProps) {
   const { recommendations, isLoading, error, refresh, source } = useRecommendations(userId, limit);
-
-  if (isLoading) {
-    return (
-      <div className='recommendation-section'>
-        <h2>{title}</h2>
-        <div className='loading-grid'>
-          {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className='product-card-skeleton'>
-              <div className='image-skeleton'></div>
-              <div className='info-skeleton'>
-                <div className='title-skeleton'></div>
-                <div className='price-skeleton'></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+console.log(error)
 
   if (error) {
     return (
       <div className='recommendation-section'>
-        <h2>{title}</h2>
+        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
         <div className='error-state'>
           <p>Failed to load recommendations</p>
           <button onClick={refresh} className='retry-button'>
@@ -51,7 +34,7 @@ export default function UserRecommendationList({
   if (recommendations.length === 0) {
     return (
       <div className='recommendation-section'>
-        <h2>{title}</h2>
+        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
         <p>No recommendations available at this time.</p>
       </div>
     );
@@ -60,7 +43,7 @@ export default function UserRecommendationList({
   return (
     <div className='recommendation-section'>
       <div className='section-header'>
-        <h2>{title}</h2>
+        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
         {source && (
           <span className='source-badge'>
             {source === 'algorithm' ? 'Personalized' : 'Popular'}
@@ -72,20 +55,7 @@ export default function UserRecommendationList({
       </div>
 
       <div className='recommendation-grid'>
-        {recommendations.map(product => (
-          <div key={product.id} className='product-card'>
-            {product.images && product.images.length > 0 && (
-              <img src={product.images[0].url} alt={product.name} className='product-image' />
-            )}
-            <div className='product-info'>
-              <h3 className='product-name'>{product.name}</h3>
-              <p className='product-price'>${product.price.toString()}</p>
-              {product.category && (
-                <span className='product-category'>{product.category.name}</span>
-              )}
-            </div>
-          </div>
-        ))}
+        <CarouselModel products={recommendations} loading={isLoading} error={error} />
       </div>
     </div>
   );

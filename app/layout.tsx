@@ -18,9 +18,6 @@ export const metadata: Metadata = {
   description: 'Discover premium products with seamless shopping experience'
  };
 
-
-const queryClient = new QueryClient();
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
@@ -30,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Providers>
               <div className='max-w-screen min-h-screen'>
                 <Header />
-                <main className='px-4 py-4 sm:pt-20 md:px-10 md:py-20'>
+                <main className='px-4 py-12 sm:pt-20 md:px-10 md:py-20'>
                   <ErrorBoundary>{children}</ErrorBoundary>
                 </main>
                 <Footer />

@@ -25,9 +25,10 @@ const generatePaymentData = (total_amount: number): PaymentData => {
 
 interface PaymentFormProps {
   total_amount: number;
+  productCode:string
 }
 
-const Esewa: React.FC<PaymentFormProps> = ({ total_amount = 100 }) => {
+const Esewa: React.FC<PaymentFormProps> = ({ total_amount = 100,productCode }) => {
   const { transaction_uuid, hashInBase64 } = generatePaymentData(total_amount);
 
   return (

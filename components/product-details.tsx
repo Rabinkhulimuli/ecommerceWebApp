@@ -202,6 +202,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* carousel */}
       {!loading ? (
         <div>
+          <h2 className='text-2xl font-semibold py-4'>Similar Products</h2>
           <CarouselModel products={recommendations} loading={loading} error={error} />
         </div>
       ) : (

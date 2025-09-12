@@ -3,13 +3,16 @@ import { useToast } from '@/hooks/use-toast';
 import React, { useState } from 'react';
 export default function Category() {
   const [name, setName] = useState('');
+  const[isLoading,setIsLoading]= useState(false)
   const { toast } = useToast();
   const handleSubmit = async () => {
+    setIsLoading(true)
     if (!name.trim()) {
       toast({
         title: 'Error',
         description: 'Category name cannot be empty',
       });
+      setIsLoading(false)
       return;
     }
 
@@ -30,13 +33,15 @@ export default function Category() {
           title: 'Success',
           description: 'Category added successfully!',
         });
-        setName(''); // Clear the input
+        setIsLoading(false)
+        setName(''); 
       } else {
         toast({
           title: 'Error',
           description: 'Failed to add category',
           variant: 'destructive',
         });
+        setIsLoading(false)
       }
     } catch (error) {
       console.error('Error submitting category:', error);
@@ -45,6 +50,7 @@ export default function Category() {
         description: 'Something went wrong',
         variant: 'destructive',
       });
+      setIsLoading(false)
     }
   };
 
@@ -63,10 +69,11 @@ export default function Category() {
       />
       <button
         type='button'
+        disabled={isLoading}
         onClick={handleSubmit}
-        className='mt-2 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
+        className={`mt-2 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-all duration-700 ease-in-out cursor-pointer ${isLoading?"animate-in":""}`}
       >
-        Submit
+        {isLoading?"Submitting...":"Submit"}
       </button>
     </div>
   );
