@@ -80,7 +80,7 @@ export type sessionUsertype = {
   image?: string | null;
   role?:string;
 } | null;
-export interface Address {
+export type Address ={
   id:string
   firstName: string;
   lastName: string;
@@ -140,3 +140,24 @@ export interface RecommendationResult {
   generatedAt: Date;
   source: 'algorithm' | 'fallback';
 }
+export type Payment = {
+  id: string;
+  orderId: string;
+  status: "PENDING" | "SUCCESS" | "FAILED"; // adjust according to your enum
+  method: "ESEWA" | "CASH_ON_DELIVERY" | string;
+  transactionId: string | null;
+  createdAt: string;
+};
+export type AllOrderType = {
+  id: string;
+  userId: string;
+  totalPrice: string;
+  status: "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELED"; 
+  createdAt: string;
+  shippingId: string | null;
+  updatedAt: string;
+  user: User;
+  shipping: Address | null;
+  payment: Payment | null;
+  orderItems: OrderItem[];
+};

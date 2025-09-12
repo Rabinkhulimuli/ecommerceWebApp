@@ -41,8 +41,8 @@ export default function OrderConfirmationEmail({
         <Container style={{ backgroundColor: "#fff", padding: "24px", borderRadius: "12px", maxWidth: "600px" }}>
           
           {/* Logo */}
-          <Section style={{ textAlign: "center", marginBottom: "20px" }}>
-            <Img src={process.env.NEXT_PUBLIC_APP_LOGO} alt="Xprive" width="120" />
+          <Section style={{ textAlign: "center", marginBottom: "20px" ,display:"flex", alignItems:"center" ,justifyContent:"center" ,width:"full" }}>
+            <Img src={process.env.NEXT_PUBLIC_APP_LOGO} alt="prive" width="120" />
           </Section>
 
           {/* Header */}
@@ -101,7 +101,7 @@ export default function OrderConfirmationEmail({
           <Section style={{ marginTop: "30px", textAlign: "center", fontSize: "13px", color: "#888" }}>
             <Text>prive © {new Date().getFullYear()} – All rights reserved.</Text>
             <Text>
-              Need help? <a href="mailto:support@xprive.com" style={{ color: "#0070f3" }}>Contact Support</a>
+              Need help? <a href="mailto:support@prive.com" style={{ color: "#0070f3" }}>Contact Support</a>
             </Text>
           </Section>
 

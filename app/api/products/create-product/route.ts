@@ -1,8 +1,7 @@
-// app/api/products/create-product/route.ts
 import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
 import prisma from '@/lib/prisma';
-import { DefaultSession, getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function POST(request: Request) {
@@ -10,10 +9,13 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     const userId = session?.user.id;
     const formData = await request.formData();
+    const userRole = session?.user.role;
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized access' }, { status: 401 });
+    }
     if (!userId) {
       return NextResponse.json({ error: 'user mut sign in first ' }, { status: 400 });
     }
-    // Extract product data
     const productData = {
       name: formData.get('name')?.toString() || '',
       categoryId: formData.get('categoryId')?.toString() || '',
@@ -31,7 +33,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid category ID' }, { status: 400 });
     }
 
-    // Get all files (handles both single and multiple files)
     const files = formData.getAll('images').filter((item): item is File => item instanceof File);
 
     if (files.length === 0) {
@@ -39,7 +40,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No valid files were uploaded' }, { status: 400 });
     }
 
-    // Upload files to Cloudinary
 
     const uploadResults = await Promise.all(
       files.map(async file => {

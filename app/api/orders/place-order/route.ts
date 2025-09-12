@@ -15,7 +15,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // Parse incoming body
     const body = await req.json();
     const { items, shippingId, paymentMethod, transactionId } = body;
     if(!shippingId){
@@ -63,8 +62,9 @@ export async function POST(req: Request) {
             transactionId:transactionId||null,
             status:"PENDING"
           }
-        }
+        },
       },
+    
       include: {
         orderItems: {
           include: { product: { include: { images: true } } },

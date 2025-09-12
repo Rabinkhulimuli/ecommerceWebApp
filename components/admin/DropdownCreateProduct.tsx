@@ -13,6 +13,11 @@ export default function DropdownCreateProduct({ handleDropdown }: { handleDropdo
       name: 'create product',
       link: '/admin/create-product',
     },
+    {
+      id: 2,
+      name: 'Manage Orders',
+      link: '/admin/orders/manage-order',
+    },
   ];
   return (
     <div className='flex w-fit flex-col items-center justify-center gap-2 rounded-md px-2 py-1 shadow-md backdrop-blur-2xl -backdrop-hue-rotate-90'>
