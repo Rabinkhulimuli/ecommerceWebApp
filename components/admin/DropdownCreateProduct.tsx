@@ -24,9 +24,14 @@ export default function DropdownCreateProduct({ handleDropdown }: { handleDropdo
             link: '/admin/orders/manage-order',
           },
           {
-            id: 2,
+            id: 3,
             name: 'My Shop',
             link: '/admin/shop',
+          },
+          {
+            id: 4,
+            name: 'Manage Products',
+            link: '/admin/products/manage-products',
           },
         ]
       : userRole === 'SUPERADMIN'

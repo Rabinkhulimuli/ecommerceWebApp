@@ -21,7 +21,7 @@ export default function AdminComponent({ handleMenuOpen }: { handleMenuOpen?: ()
           className={`flex cursor-pointer items-center gap-5 hover:text-blue-600 ${pathname.includes('/admin') || pathname.includes('/super') ? 'text-rose-600' : ''}`}
           onClick={handleDropDown}
         >
-          <span> Admin</span>
+          <span className={`${openDropdown?"text-blue-700":""}`}> Admin</span>
           {pathname.includes('/admin') ||
             (pathname.includes('/super') && (
               <span>
@@ -30,7 +30,7 @@ export default function AdminComponent({ handleMenuOpen }: { handleMenuOpen?: ()
             ))}
         </div>
         <div
-          className={`absolute top-12 w-max overflow-hidden bg-gray-100 transition-all duration-500 ease-in-out ${openDropdown ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'} `}
+          className={`absolute top-12 w-max overflow-hidden overflow-y-scroll bg-gray-100 transition-all duration-500  ease-in-out ${openDropdown ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'} `}
         >
           <DropdownCreateProduct handleDropdown={handleDropDowno} />
         </div>

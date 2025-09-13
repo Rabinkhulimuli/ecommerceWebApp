@@ -49,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
             className='rounded-md object-cover p-2 drop-shadow-xl transition-transform duration-300 group-hover:scale-105 sm:p-6'
           />
         </Link>
-        {product.discount && (
+        {product.discount&&Number(product.discount)>0 && (
           <Badge className='absolute left-2 top-2 bg-red-500'>
             -{product.discount.toString()}%
           </Badge>

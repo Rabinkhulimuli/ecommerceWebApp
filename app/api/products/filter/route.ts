@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
     // Get query parameters
     const minPrice = Number(searchParams.get('minPrice')) || 0;
-    const maxPrice = Number(searchParams.get('maxPrice')) || 5000;
+    const maxPrice = Number(searchParams.get('maxPrice'));
     const categoryName = searchParams.get('category');
     const searchQuery = searchParams.get('search');
     const isSuggestion = searchParams.get('suggest') === 'true';
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
     const where: Prisma.ProductWhereInput = {
       price: {
         gte: minPrice,
-        lte: maxPrice,
+          ...(maxPrice ? { lte: maxPrice } : {}),
       },
     };
 

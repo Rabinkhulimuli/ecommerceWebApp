@@ -1,15 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import ImageUploader from './ImageUploader';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import CategorySelector from './CategorySelector';
 import { useToast } from '../ui/use-toast';
+import FullPageImageUploader from './ImageUploader';
 
 export default function CreateProductForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetKey, setResetKey] = useState(0);
+  const [isLoading, setIsLoading] = useState(!!productId);
+
   const initialState = {
     name: '',
     description: '',
@@ -18,9 +23,46 @@ export default function CreateProductForm() {
     categoryId: '',
     images: [] as File[],
     discount: 0,
+    existingImageUrls: [],
   };
+
   const [productData, setProductData] = useState(initialState);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`/api/products/${productId}`);
+        if (!res.ok) throw new Error('Failed to fetch product');
+        const data = await res.json();
+        setProductData({
+          name: data.name || '',
+          description: data.description || '',
+          price: data.price || 0,
+          stock: data.stock || 0,
+          categoryId: data.categoryId || '',
+          images: [],
+          discount: data.discount || 0,
+          existingImageUrls: data.images || [],
+        });
+      } catch (err) {
+        console.error(err);
+        toast({
+          title: 'Error',
+          description: 'Failed to load product data',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId, toast]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -28,13 +70,6 @@ export default function CreateProductForm() {
     setProductData(prev => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleImageUpload = (files: File[]) => {
-    setProductData(prev => ({
-      ...prev,
-      images: files,
     }));
   };
 
@@ -50,48 +85,61 @@ export default function CreateProductForm() {
       formData.append('categoryId', productData.categoryId);
       formData.append('stock', productData.stock.toString());
       formData.append('discount', productData.discount.toString());
+      // Existing images (send only remaining ones)
+      formData.append('existingImages', JSON.stringify(productData.existingImageUrls));
 
-      productData.images.forEach((file, index) => {
+      productData.images.forEach(file => {
         formData.append(`images`, file);
       });
-      const response = await fetch('http://localhost:3000/api/products/create-product', {
-        method: 'POST',
+
+      const url = productId
+        ? `/api/products/create-product?id=${productId}` // update mode
+        : '/api/products/create-product'; // create mode
+
+      const method = productId ? 'PATCH' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         body: formData,
       });
 
       if (response.ok) {
         toast({
           title: 'Success',
-          description: 'Successfully items created',
+          description: productId ? 'Product updated successfully' : 'Product created successfully',
         });
-        setProductData(initialState);
-        setResetKey(prev => prev + 1);
+
+        if (!productId) {
+          setProductData(initialState);
+          setResetKey(prev => prev + 1);
+        } else {
+          router.push('/products');
+        }
       } else {
-        toast({
-          title: 'Error',
-          description: 'items failed to create',
-          variant: 'destructive',
-        });
-        throw new Error('Failed to create product');
+        throw new Error('Request failed');
       }
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'failed to create items',
+        description: productId ? 'Failed to update product' : 'Failed to create product',
         variant: 'destructive',
       });
-      console.error('Error creating product:', error);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return <p className='py-10 text-center'>Loading product...</p>;
+  }
 
   return (
     <div className='mx-auto max-w-4xl px-4 py-8'>
       <div className='overflow-hidden rounded-xl bg-white shadow-md'>
         <div className='p-6 md:p-8'>
           <h1 className='mb-6 text-nowrap text-xl font-bold text-gray-800 sm:text-2xl'>
-            Create New Product
+            {productId ? 'Edit Product' : 'Create New Product'}
           </h1>
 
           <form onSubmit={handleSubmit} className='space-y-6'>
@@ -200,9 +248,18 @@ export default function CreateProductForm() {
             </div>
 
             {/* Image Upload Section */}
-            <div className='sm:space-y-4'>
+            <div className='sm:space-y-1'>
               <h2 className='text-lg font-semibold text-gray-700'>Product Images</h2>
-              <ImageUploader key={resetKey} onUpload={handleImageUpload} />
+              <FullPageImageUploader
+                existingImages={productData.existingImageUrls}
+                onUpload={files => setProductData(prev => ({ ...prev, images: files }))}
+                onRemoveExisting={url => {
+                  setProductData(prev => ({
+                    ...prev,
+                    existingImageUrls: prev.existingImageUrls.filter(img => !url.includes(img)),
+                  }));
+                }}
+              />
             </div>
 
             {/* Form Actions */}
@@ -219,7 +276,13 @@ export default function CreateProductForm() {
                 disabled={isSubmitting}
                 className='w-full rounded-md bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700 disabled:bg-blue-400'
               >
-                {isSubmitting ? 'Creating...' : 'Create Product'}
+                {isSubmitting
+                  ? productId
+                    ? 'Updating...'
+                    : 'Creating...'
+                  : productId
+                    ? 'Update Product'
+                    : 'Create Product'}
               </button>
             </div>
           </form>

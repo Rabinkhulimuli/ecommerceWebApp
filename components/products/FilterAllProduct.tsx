@@ -22,7 +22,6 @@ export default function FilterAllProduct({ category }: { category?: string }) {
     category: category ? [category] : categories,
     search: searchQuery,
   });
-  console.log('searchWuery', searchQuery);
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     setPage(1);

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
@@ -20,40 +19,39 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Pencil, Trash2, Plus } from 'lucide-react';
+import CreateProductForm from '@/components/products/CreateProductForm';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 type Product = {
   id: number;
+  discount: number;
   name: string;
   price: number;
   stock: number;
-  category: string;
+  category: {
+    name: string;
+  };
 };
 
 export default function ProductManagement() {
-  const [products, setProducts] = useState<Product[]>([
-    { id: 1, name: 'iPhone 15', price: 1200, stock: 10, category: 'Phones' },
-    { id: 2, name: 'PS5', price: 499, stock: 5, category: 'Gaming' },
-  ]);
-
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', category: '' });
-
-  const handleAddProduct = () => {
-    setProducts([
-      ...products,
-      {
-        id: Date.now(),
-        name: newProduct.name,
-        price: parseFloat(newProduct.price),
-        stock: parseInt(newProduct.stock),
-        category: newProduct.category,
-      },
-    ]);
-    setNewProduct({ name: '', price: '', stock: '', category: '' });
+  const [products, setProducts] = useState<Product[]>([]);
+  const { data: session } = useSession();
+  const userId = session?.user.id;
+  const getAllProduct = async () => {
+    try {
+      const res = await fetch(`/api/admin/products/manage-products?shopId=${userId}`);
+      const data = await res.json();
+      setProducts(data.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
+  useEffect(() => {
+    getAllProduct();
+  }, []);
 
-  const handleDeleteProduct = (id: number) => {
-    setProducts(products.filter(p => p.id !== id));
-  };
+  const handleDeleteProduct = (id: number) => {};
 
   return (
     <div className='mx-auto max-w-6xl p-6'>
@@ -66,76 +64,62 @@ export default function ProductManagement() {
                 <Plus className='h-4 w-4' /> Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className='sm:max-w-[500px]'>
+            <DialogContent className='overflow-hidden overflow-y-scroll sm:max-h-[80vh]'>
               <DialogHeader>
                 <DialogTitle>Add New Product</DialogTitle>
               </DialogHeader>
-              <div className='grid gap-4 py-4'>
-                <Input
-                  placeholder='Product Name'
-                  value={newProduct.name}
-                  onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-                />
-                <Input
-                  placeholder='Price'
-                  type='number'
-                  value={newProduct.price}
-                  onChange={e => setNewProduct({ ...newProduct, price: e.target.value })}
-                />
-                <Input
-                  placeholder='Stock'
-                  type='number'
-                  value={newProduct.stock}
-                  onChange={e => setNewProduct({ ...newProduct, stock: e.target.value })}
-                />
-                <Input
-                  placeholder='Category'
-                  value={newProduct.category}
-                  onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-                />
-                <Button onClick={handleAddProduct} className='mt-2'>
-                  Save Product
-                </Button>
+              <div className=''>
+                <CreateProductForm />
               </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
         <CardContent>
-          <div className='overflow-x-auto'>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className='text-right'>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map(product => (
-                  <TableRow key={product.id}>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>${product.price}</TableCell>
-                    <TableCell>{product.stock}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell className='flex justify-end gap-2'>
-                      <Button size='sm' variant='outline'>
-                        <Pencil className='h-4 w-4' />
-                      </Button>
-                      <Button
-                        size='sm'
-                        variant='destructive'
-                        onClick={() => handleDeleteProduct(product.id)}
-                      >
-                        <Trash2 className='h-4 w-4' />
-                      </Button>
-                    </TableCell>
+          {products && products.length > 0 ? (
+            <div className='overflow-x-auto'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Discount%*</TableHead>
+                    <TableHead>Stock</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className='text-right'>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {products &&
+                    Array.isArray(products) &&
+                    products.map(product => (
+                      <TableRow key={product.id}>
+                        <TableCell>{product.name}</TableCell>
+                        <TableCell>${product.price}</TableCell>
+                        <TableCell>${product.discount}</TableCell>
+                        <TableCell>{product.stock}</TableCell>
+                        <TableCell>{product.category.name}</TableCell>
+                        <TableCell className='flex justify-end gap-2'>
+                          <Link href={`/admin/create-product?id=${product.id}`}>
+                            <Button size='sm' variant='outline'>
+                              <Pencil className='h-4 w-4' />
+                            </Button>
+                          </Link>
+                          <Button
+                            size='sm'
+                            variant='destructive'
+                            onClick={() => handleDeleteProduct(product.id)}
+                          >
+                            <Trash2 className='h-4 w-4' />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className='px-4 py-2'>You haven't listed any products yet.</div>
+          )}
         </CardContent>
       </Card>
     </div>
