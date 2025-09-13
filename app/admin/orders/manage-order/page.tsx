@@ -25,7 +25,7 @@ export default function OrdersPage() {
       try {
         const res = await fetch('/api/orders/all');
         const data = await res.json();
-        setOrders(data);
+        setOrders(data.data);
       } catch (err) {
         toast({ title: 'Error loading orders', variant: 'destructive' });
       } finally {
@@ -80,7 +80,8 @@ export default function OrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders &&Array.isArray(orders )&&
+            {orders &&
+              Array.isArray(orders) &&
               orders.map(order => (
                 <TableRow key={order.id}>
                   <TableCell>{order.user.name}</TableCell>

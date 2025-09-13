@@ -1,24 +1,43 @@
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import React, { SetStateAction } from 'react';
+import React from 'react';
 
 export default function DropdownCreateProduct({ handleDropdown }: { handleDropdown: () => void }) {
-  const adminList = [
-    {
-      id: 0,
-      name: 'create category',
-      link: '/admin/create-category',
-    },
-    {
-      id: 1,
-      name: 'create product',
-      link: '/admin/create-product',
-    },
-    {
-      id: 2,
-      name: 'Manage Orders',
-      link: '/admin/orders/manage-order',
-    },
-  ];
+  const { data: session } = useSession();
+  const userRole = session?.user.role;
+  const adminList =
+    userRole === 'ADMIN'
+      ? [
+          {
+            id: 0,
+            name: 'create category',
+            link: '/admin/create-category',
+          },
+          {
+            id: 1,
+            name: 'create product',
+            link: '/admin/create-product',
+          },
+          {
+            id: 2,
+            name: 'Manage Orders',
+            link: '/admin/orders/manage-order',
+          },
+          {
+            id: 2,
+            name: 'My Shop',
+            link: '/admin/shop',
+          },
+        ]
+      : userRole === 'SUPERADMIN'
+        ? [
+            {
+              id: 0,
+              name: 'Manage User',
+              link: '/super/manage-user',
+            },
+          ]
+        : [];
   return (
     <div className='flex w-fit flex-col items-center justify-center gap-2 rounded-md px-2 py-1 shadow-md backdrop-blur-2xl -backdrop-hue-rotate-90'>
       {adminList.map(eh => (

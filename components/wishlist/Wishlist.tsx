@@ -60,15 +60,15 @@ export default function WishlistPage() {
             <h1 className='text-4xl font-bold text-foreground'>Your Wishlist</h1>
           </div>
           <p className='mx-auto max-w-2xl text-lg text-muted-foreground'>
-            {wishlist && wishlist.length > 0
-              ? `${wishlist.length} item${wishlist.length === 1 ? '' : 's'} waiting for you`
+            {wishlist && wishlist.data.length > 0
+              ? `${wishlist.data.length} item${wishlist.data.length === 1 ? '' : 's'} waiting for you`
               : "Your wishlist is empty, but your dreams don't have to be"}
           </p>
         </div>
       </div>
 
       <div className='container mx-auto px-4 py-8'>
-        {wishlist && wishlist.length === 0 ? (
+        {wishlist && wishlist.data.length === 0 ? (
           <div className='py-16 text-center'>
             <div className='mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-muted'>
               <Heart className='h-12 w-12 text-muted-foreground' />
@@ -88,8 +88,8 @@ export default function WishlistPage() {
             {/* Product Grid */}
             <div className='mb-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
               {wishlist &&
-                Array.isArray(wishlist) &&
-                wishlist.map((item: WishlistItemType) => (
+                Array.isArray(wishlist.data) &&
+                wishlist.data.map((item: WishlistItemType) => (
                   <Card
                     key={item.id}
                     className='group overflow-hidden border-border bg-card transition-all duration-300 hover:shadow-lg'

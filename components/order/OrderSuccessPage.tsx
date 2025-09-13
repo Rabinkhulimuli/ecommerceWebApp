@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Package, Truck } from 'lucide-react';
-export default function OrderSuccessPage({total}:{total:number}) {
+export default function OrderSuccessPage({ total }: { total: number }) {
   return (
     <div className='container mx-auto max-w-2xl px-4 py-16 text-center'>
       <div className='mb-8'>

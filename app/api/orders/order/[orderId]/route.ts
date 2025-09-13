@@ -5,10 +5,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req: Request, { params }: { params: { orderId: string } }) {
   try {
-    const session = await getServerSession(authOptions)
-    const userRole = session?.user.role
-    if(userRole!=="ADMIN"){
-        return NextResponse.json({message:"Unauthorized access"},{status:401})
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user.role;
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized access' }, { status: 401 });
     }
     const order = await prisma.order.findUnique({
       where: { id: params.orderId },
@@ -33,10 +33,10 @@ export async function GET(req: Request, { params }: { params: { orderId: string 
 // PATCH - update order status
 export async function PATCH(req: Request, { params }: { params: { orderId: string } }) {
   try {
-    const session = await getServerSession(authOptions)
-    const userRole = session?.user.role
-    if(userRole!=="ADMIN"){
-        return NextResponse.json({message:"Unauthorized access"},{status:401})
+    const session = await getServerSession(authOptions);
+    const userRole = session?.user.role;
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json({ message: 'Unauthorized access' }, { status: 401 });
     }
     const body = await req.json();
     const { status } = body;

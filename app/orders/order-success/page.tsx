@@ -8,14 +8,14 @@ import Esewa from '@/components/esewa/Esewa';
 
 export default function OrderSuccessPage() {
   const searchParams = useSearchParams();
-  const total = searchParams.get('price')
-  const productCode= searchParams.get('product')
-  const router= useRouter()
-  if(!total||Number(total)<=0||!productCode){
-    return router.push("/")
+  const total = searchParams.get('price');
+  const productCode = searchParams.get('product');
+  const router = useRouter();
+  if (!total || Number(total) <= 0 || !productCode) {
+    return router.push('/');
   }
   return (
-    <div className='container mx-auto max-w-2xl px-4 py-16 space-y-6 text-center'>
+    <div className='container mx-auto max-w-2xl space-y-6 px-4 py-16 text-center'>
       <div className='mb-8'>
         <CheckCircle className='mx-auto mb-6 h-24 w-24 text-green-600' />
         <h1 className='mb-4 text-3xl font-bold text-gray-900'>Order Placed Successfully!</h1>
@@ -31,9 +31,7 @@ export default function OrderSuccessPage() {
         <CardContent className='space-y-4'>
           <div className='flex justify-between'>
             <span>Order Number:</span>
-            <span className='font-semibold'>
-              #MS-{productCode}
-            </span>
+            <span className='font-semibold'>#MS-{productCode}</span>
           </div>
           <div className='flex justify-between'>
             <span>Estimated Delivery:</span>
@@ -80,15 +78,15 @@ export default function OrderSuccessPage() {
       </div>
       <Card>
         <CardHeader>
-         <CardTitle className="flex items-center space-x-2">
-            <Wallet className="h-5 w-5" />
-             <span>Pay with eSewa</span>
-           </CardTitle>
-       </CardHeader>
-         <CardContent>
-           <Esewa total_amount={Number(total) ?? 0} productCode={productCode} />
+          <CardTitle className='flex items-center space-x-2'>
+            <Wallet className='h-5 w-5' />
+            <span>Pay with eSewa</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Esewa total_amount={Number(total) ?? 0} productCode={productCode} />
         </CardContent>
-       </Card>
+      </Card>
     </div>
   );
 }

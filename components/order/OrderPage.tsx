@@ -51,7 +51,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch(`/api/orders/user?userId=${userId}`);
       const data = await res.json();
-      setOrders(data);
+      setOrders(data.data);
     } catch (err) {
       console.error(err);
       toast({ title: 'Error fetching orders', variant: 'destructive' });
@@ -82,11 +82,11 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-10">
-        <p className="text-center text-lg">Loading orders...</p>
-        <div className="space-y-4 mt-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-200 h-40 rounded-md" />
+      <div className='container mx-auto px-4 py-10'>
+        <p className='text-center text-lg'>Loading orders...</p>
+        <div className='mt-4 space-y-4'>
+          {[1, 2, 3].map(i => (
+            <div key={i} className='h-40 animate-pulse rounded-md bg-gray-200' />
           ))}
         </div>
       </div>
@@ -94,62 +94,57 @@ export default function OrdersPage() {
   }
 
   if (!orders.length) {
-    return <p className="text-center py-10 text-lg">No orders found.</p>;
+    return <p className='py-10 text-center text-lg'>No orders found.</p>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold text-center">My Orders</h1>
-      <div className="space-y-6">
-        {orders.map((order) => (
-          <Card
-            key={order.id}
-            className="shadow-lg rounded-xl border space-y-2 border-gray-200"
-          >
-            <CardHeader className="bg-gray-50 rounded-t-xl">
-              <CardTitle className="flex justify-between items-center text-lg md:text-xl font-semibold">
+    <div className='container mx-auto px-4 py-8'>
+      <h1 className='mb-8 text-center text-3xl font-bold'>My Orders</h1>
+      <div className='space-y-6'>
+        {orders.map(order => (
+          <Card key={order.id} className='space-y-2 rounded-xl border border-gray-200 shadow-lg'>
+            <CardHeader className='rounded-t-xl bg-gray-50'>
+              <CardTitle className='flex items-center justify-between text-lg font-semibold md:text-xl'>
                 <span>Order #{order.id}</span>
-                <span className="text-gray-500 text-sm">
+                <span className='text-sm text-gray-500'>
                   {new Date(order.createdAt).toLocaleDateString()}
                 </span>
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className='space-y-4'>
               {/* Shipping Info */}
-              <div className="bg-gray-50 p-4 rounded-md">
-                <h3 className="font-semibold mb-1">Shipping Address</h3>
+              <div className='rounded-md bg-gray-50 p-4'>
+                <h3 className='mb-1 font-semibold'>Shipping Address</h3>
                 {order.shipping ? (
-                  <p className="text-gray-700 text-sm">
-                    {order.shipping.street}, {order.shipping.city},{' '}
-                    {order.shipping.postalCode}, {order.shipping.country}
+                  <p className='text-sm text-gray-700'>
+                    {order.shipping.street}, {order.shipping.city}, {order.shipping.postalCode},{' '}
+                    {order.shipping.country}
                   </p>
                 ) : (
-                  <p className="text-gray-500 text-sm">No shipping info</p>
+                  <p className='text-sm text-gray-500'>No shipping info</p>
                 )}
               </div>
 
               {/* Order Items */}
-              <div className="overflow-x-auto">
-                <h3 className="font-semibold mb-2">Items</h3>
-                <ul className="grid gap-4 md:grid-cols-2">
-                  {order.orderItems.map((item) => (
+              <div className='overflow-x-auto'>
+                <h3 className='mb-2 font-semibold'>Items</h3>
+                <ul className='grid gap-4 md:grid-cols-2'>
+                  {order.orderItems.map(item => (
                     <li
                       key={item.id}
                       onClick={() => router.push(`/products/${item.product.id}`)}
-                      className="flex items-center gap-4 p-3 border rounded-md hover:shadow-md cursor-pointer transition"
+                      className='flex cursor-pointer items-center gap-4 rounded-md border p-3 transition hover:shadow-md'
                     >
                       <img
                         src={item.product.images[0]?.url || '/placeholder.png'}
                         alt={item.product.name}
-                        className="h-16 w-16 rounded-md object-cover flex-shrink-0"
+                        className='h-16 w-16 flex-shrink-0 rounded-md object-cover'
                       />
-                      <div className="flex flex-col flex-1 overflow-hidden">
-                        <p className="font-medium truncate max-w-[14rem]">
-                          {item.product.name}
-                        </p>
-                        <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
-                        <p className="text-gray-700 font-semibold">Price: ${item.price}</p>
+                      <div className='flex flex-1 flex-col overflow-hidden'>
+                        <p className='max-w-[14rem] truncate font-medium'>{item.product.name}</p>
+                        <p className='text-sm text-gray-500'>Qty: {item.quantity}</p>
+                        <p className='font-semibold text-gray-700'>Price: ${item.price}</p>
                       </div>
                     </li>
                   ))}
@@ -157,29 +152,31 @@ export default function OrdersPage() {
               </div>
 
               {/* Total & Payment */}
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+              <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
                 <div>
-                  <h3 className="font-semibold">Total Price</h3>
-                  <p className="text-lg font-bold">${order.totalPrice}</p>
+                  <h3 className='font-semibold'>Total Price</h3>
+                  <p className='text-lg font-bold'>${order.totalPrice}</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <h3 className="font-semibold">Payment Status</h3>
+                <div className='flex flex-col items-start gap-2 sm:flex-row sm:items-center'>
+                  <h3 className='font-semibold'>Payment Status</h3>
                   {order.payment?.status === 'COMPLETED' ? (
-                    <p className="text-green-600 font-bold">Paid</p>
+                    <p className='font-bold text-green-600'>Paid</p>
                   ) : (
                     <div
                       className={`flex items-center gap-2 transition-all duration-700 ease-in-out ${
-                        payingOrderId === order.id ? 'flex-col justify-center w-full' : ''
+                        payingOrderId === order.id ? 'w-full flex-col justify-center' : ''
                       }`}
                     >
-                      <p className="text-red-600 font-bold">
-                        {order.payment?.status || 'Pending'}
-                      </p>
+                      <p className='font-bold text-red-600'>{order.payment?.status || 'Pending'}</p>
                       {payingOrderId === order.id ? (
-                        <Esewa total_amount={order.totalPrice} productCode="EPAYTEST" />
+                        <Esewa total_amount={order.totalPrice} productCode='EPAYTEST' />
                       ) : (
-                        <Button disabled={order.status==="CANCELED"} size="sm" onClick={() => setPayingOrderId(order.id)}>
+                        <Button
+                          disabled={order.status === 'CANCELED'}
+                          size='sm'
+                          onClick={() => setPayingOrderId(order.id)}
+                        >
                           Pay with eSewa
                         </Button>
                       )}
@@ -189,17 +186,17 @@ export default function OrdersPage() {
               </div>
 
               {/* Order Status */}
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="font-semibold">Order Status:</h3>
+              <div className='flex flex-wrap items-center gap-2'>
+                <h3 className='font-semibold'>Order Status:</h3>
                 <Badge
                   className={`${
                     order.status === 'DELIVERED'
                       ? 'bg-green-100 text-green-800'
                       : order.status === 'SHIPPED'
-                      ? 'bg-blue-100 text-blue-800'
-                      : order.status === 'CANCELED'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-blue-100 text-blue-800'
+                        : order.status === 'CANCELED'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
                   }`}
                 >
                   {order.status}
@@ -207,9 +204,9 @@ export default function OrdersPage() {
               </div>
 
               <Button
-                variant="secondary"
+                variant='secondary'
                 onClick={() => handleDeleteOrder(order.id)}
-                className="bg-red-500 text-white hover:bg-red-400 hover:text-white"
+                className='bg-red-500 text-white hover:bg-red-400 hover:text-white'
               >
                 Cancel
               </Button>

@@ -42,14 +42,18 @@ export default function CartPage() {
   return (
     <div className='container mx-auto p-0 py-8 sm:px-4'>
       <h1 className='mb-8 text-xl font-bold text-gray-900 sm:text-3xl'>Shopping Cart</h1>
-      <div className='grid lg:grid-cols-3 space-y-5 lg:space-y-0 lg:gap-x-8 '>
-        <div className='space-y-4  lg:col-span-2'>
+      <div className='grid space-y-5 lg:grid-cols-3 lg:gap-x-8 lg:space-y-0'>
+        <div className='space-y-4 lg:col-span-2'>
           {items.map(item => (
             <CartItem key={item.id} item={item} />
           ))}
 
           <div className='flex items-center justify-between pt-4'>
-            <Button variant='outline' onClick={handleClearCart} className='text-red-500 hover:text-red-600'>
+            <Button
+              variant='outline'
+              onClick={handleClearCart}
+              className='text-red-500 hover:text-red-600'
+            >
               Clear Cart
             </Button>
             <Link href='/products'>

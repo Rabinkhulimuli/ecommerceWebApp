@@ -5,9 +5,18 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
+
+    const page = Math.max(Number(searchParams.get('page')) || 1, 1);
+    const PageSize = 10;
+    const skip = (page - 1) * PageSize;
     if (!userId) {
       return NextResponse.json({ error: 'user or product not found' }, { status: 400 });
     }
+    const total = await prisma.cartItem.count({
+      where: {
+        userId,
+      },
+    });
     const cartItem = await prisma.cartItem.findMany({
       where: {
         userId,
@@ -24,6 +33,8 @@ export async function GET(request: Request) {
           },
         },
       },
+      take: PageSize,
+      skip,
     });
     if (!cartItem) {
       return NextResponse.json({ error: 'cart item is empty' });
@@ -47,7 +58,19 @@ export async function GET(request: Request) {
       },
     }));
 
-    return NextResponse.json({ success: true, data: responseData }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: responseData,
+        meta: {
+          page,
+          pageSize: PageSize,
+          total,
+          TotalPages: Math.ceil(total / PageSize),
+        },
+      },
+      { status: 200 }
+    );
   } catch (err) {
     return NextResponse.json({ error: 'error getting cart items' }, { status: 400 });
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ProductType} from '@/lib/types';
+import { ProductType } from '@/lib/types';
 
 interface UseRecommendationsResult {
   recommendations: ProductType[];

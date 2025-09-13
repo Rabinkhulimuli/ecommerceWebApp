@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
@@ -18,8 +18,8 @@ export async function submitContact(
   const subject = (formData.get('subject') || '').toString().trim();
   const message = (formData.get('message') || '').toString().trim();
   const company = (formData.get('company') || '').toString().trim(); // honeypot
-  const session= await getServerSession(authOptions)
-  const userId = session?.user.id
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
   if (!userId) {
     return {
       ok: false,

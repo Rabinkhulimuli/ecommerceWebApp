@@ -69,7 +69,7 @@ export const useWishlist = (userId: string) => {
   });
 
   const toggleWishlist = async (productId: string) => {
-    const alreadyInWishlist = wishlist?.some((w: any) => w.productId === productId);
+    const alreadyInWishlist = wishlist?.data?.some((w: any) => w.productId === productId);
     if (alreadyInWishlist) {
       return removeMutation.mutate(productId);
     } else {

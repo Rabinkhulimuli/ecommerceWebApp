@@ -39,6 +39,7 @@ export default function FilterAllProduct({ category }: { category?: string }) {
       <div className='grid gap-8 lg:grid-cols-4'>
         <aside className='lg:col-span-1'>
           <ProductFilters
+            disabled={products.length === 0}
             price={price}
             setPrice={setPrice}
             categorys={categories}

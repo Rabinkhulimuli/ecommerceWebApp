@@ -12,6 +12,7 @@ export const categories = [
 ];
 
 type filterProps = {
+  disabled: boolean;
   price: number[];
   setPrice: React.Dispatch<React.SetStateAction<[number, number]>>;
   categorys: string[];
@@ -22,6 +23,7 @@ type filterProps = {
 /* const brands = ["Apple", "Samsung", "Sony", "Nike", "Adidas", "Canon"]
  */
 export function ProductFilters({
+  disabled,
   price,
   setPrice,
   categorys,
@@ -45,6 +47,7 @@ export function ProductFilters({
         <CardContent>
           <div className='space-y-4'>
             <Slider
+              disabled={disabled}
               defaultValue={[0, 5000]}
               max={5000}
               step={10}
@@ -69,6 +72,7 @@ export function ProductFilters({
             {categories.map(category => (
               <div key={category} className='flex items-center space-x-2'>
                 <Checkbox
+                  disabled={disabled}
                   id={category}
                   checked={categorys.includes(category)}
                   onCheckedChange={checked => handleChecked(category, checked === true)}
@@ -85,7 +89,7 @@ export function ProductFilters({
       {(price[0] !== 0 || price[1] !== 5000 || categorys.length > 0) && (
         <div className='absolute right-4 top-1'>
           <button
-            disabled={isLoading}
+            disabled={isLoading || disabled}
             onClick={handleFilterChange}
             className='border-1 rounded-md bg-orange-300 px-2 py-1 hover:scale-105 hover:text-blue-500'
           >

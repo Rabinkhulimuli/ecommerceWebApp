@@ -19,7 +19,8 @@ export function WishlistButton({ productId, userId, initialLiked = false }: Wish
   const [isLiked, setIsLiked] = useState(initialLiked);
 
   useEffect(() => {
-    const liked = wishlist.some((item: WishlistItemType) => item.product.id === productId);
+    if (!wishlist || !wishlist.data) return;
+    const liked = wishlist.data.some((item: WishlistItemType) => item.product.id === productId);
     setIsLiked(liked);
   }, [wishlist, productId]);
 

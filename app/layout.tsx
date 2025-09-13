@@ -15,8 +15,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'PRIVE - Premium E-commerce Experience',
-  description: 'Discover premium products with seamless shopping experience'
- };
+  description: 'Discover premium products with seamless shopping experience',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

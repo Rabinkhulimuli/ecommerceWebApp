@@ -30,11 +30,18 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
+  const page = Math.max(Number(searchParams.get('page')) || 1, 1);
+  const PageSize = 10;
+  const skip = (page - 1) * PageSize;
 
   if (!userId) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
   }
-
+  const total = await prisma.wishList.count({
+    where: {
+      userId,
+    },
+  });
   const wishlist = await prisma.wishList.findMany({
     where: { userId },
     include: {
@@ -48,9 +55,19 @@ export async function GET(request: Request) {
         },
       },
     }, // fetch product details
+    take: PageSize,
+    skip,
   });
 
-  return NextResponse.json(wishlist);
+  return NextResponse.json({
+    data: wishlist,
+    meta: {
+      page,
+      pageSize: PageSize,
+      total,
+      TotalPages: Math.ceil(total / PageSize),
+    },
+  });
 }
 
 // Remove from wishlist

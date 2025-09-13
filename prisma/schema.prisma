@@ -45,7 +45,7 @@ model User {
   image     Image?     @relation(fields: [imageId], references: [id])
   views     View[]
   wishlist  WishList[]
-
+  shop Shop?
   @@index([email])
   @@index([createdAt])
   @@index([name]) 
@@ -78,6 +78,8 @@ model Address {
   postalCode String
   isPrimary  Boolean  @default(false)
   createdAt  DateTime @default(now())
+  shopId String? @unique
+  shop Shop? @relation(fields: [shopId],references: [id],onDelete: Cascade)
   updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
   user       User     @relation("UserAddresses", fields: [userId], references: [id], onDelete: Cascade)
   order      Order[]
@@ -116,7 +118,18 @@ model OTP {
   @@index([email, createdAt]) // For OTP cleanup jobs
   @@index([expiresAt]) // For expired OTP cleanup
 }
+model Shop {
+  id        String     @id @default(uuid())
+  name      String
+  ownerId   String @unique
+  owner     User       @relation(fields: [ownerId], references: [id])
+  products  Product[]
+  address Address?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
+  @@unique([name]) 
+}
 model Product {
   id          String      @id @default(uuid())
   name        String
@@ -135,11 +148,15 @@ model Product {
   views       View[]
   wishlist    WishList[]
   isActive    Boolean   @default(true)
-  @@index([price])
+   shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id])
   @@index([categoryId])
   @@index([createdAt])
-  @@index([name]) // For product search
-  @@index([stock]) // For inventory management
+  @@index([name]) 
+  @@index([shopId,createdAt])
+  @@index([categoryId, isActive])
+  @@index([shopId])
+  @@unique([shopId,name])
 }
 
 model Image {
@@ -223,6 +240,7 @@ model Feedback {
 enum Role {
   USER
   ADMIN
+  SUPERADMIN
 }
 
 enum OrderStatus {

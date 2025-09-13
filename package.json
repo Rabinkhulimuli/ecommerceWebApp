@@ -8,7 +8,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "format": "prettier --write \"{src,app,pages,components}/**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"{src,app,pages,components,api}/**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

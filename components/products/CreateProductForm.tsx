@@ -11,14 +11,14 @@ export default function CreateProductForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const initialState = {
-  name: '',
-  description: '',
-  price: 0,
-  stock: 0,
-  categoryId: '',
-  images: [] as File[],
-  discount: 0,
-};
+    name: '',
+    description: '',
+    price: 0,
+    stock: 0,
+    categoryId: '',
+    images: [] as File[],
+    discount: 0,
+  };
   const [productData, setProductData] = useState(initialState);
   const { toast } = useToast();
   const handleChange = (
@@ -64,8 +64,8 @@ export default function CreateProductForm() {
           title: 'Success',
           description: 'Successfully items created',
         });
-        setProductData(initialState)
-        setResetKey((prev)=> prev+1)
+        setProductData(initialState);
+        setResetKey(prev => prev + 1);
       } else {
         toast({
           title: 'Error',

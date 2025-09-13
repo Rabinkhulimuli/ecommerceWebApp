@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import nodemailer from "nodemailer"
+import nodemailer from 'nodemailer';
 import OrderConfirmationEmail from '@/components/order/email/orderConformation';
 import { render } from '@react-email/components';
 export async function POST(req: Request) {
@@ -17,8 +17,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { items, shippingId, paymentMethod, transactionId } = body;
-    if(!shippingId){
-       return new Response(JSON.stringify({ error: 'No order address provided' }), {
+    if (!shippingId) {
+      return new Response(JSON.stringify({ error: 'No order address provided' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -56,44 +56,44 @@ export async function POST(req: Request) {
             price: item.product.price,
           })),
         },
-        payment:{
-          create:{
-            method:paymentMethod||"CASH_ON_DELIVERY",
-            transactionId:transactionId||null,
-            status:"PENDING"
-          }
+        payment: {
+          create: {
+            method: paymentMethod || 'CASH_ON_DELIVERY',
+            transactionId: transactionId || null,
+            status: 'PENDING',
+          },
         },
       },
-    
+
       include: {
         orderItems: {
           include: { product: { include: { images: true } } },
         },
         shipping: true,
-        payment:true
+        payment: true,
       },
     });
 
     //send email
-    const transporter=nodemailer.createTransport({
-      service:"Gmail",
-      auth:{
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS
-      }
-    })
-    if(!session.user.email){
-       return new Response(JSON.stringify({ error: 'email required' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
+    if (!session.user.email) {
+      return new Response(JSON.stringify({ error: 'email required' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
-    const emailHtml =await  render(
+    const emailHtml = await render(
       OrderConfirmationEmail({
         orderId: order.id,
-        customerName: session.user.name || "",
+        customerName: session.user.name || '',
         total: Number(order.totalPrice),
-        items: order.orderItems.map((i) => ({
+        items: order.orderItems.map(i => ({
           name: i.product.name,
           quantity: i.quantity,
           price: Number(i.price),
@@ -102,11 +102,11 @@ export async function POST(req: Request) {
       })
     );
     await transporter.sendMail({
-      from:`"PRIVE" <khulimulirabin@gmail.com>`,
-      to:session.user.email,
-      subject:`Order Confirmation #${order.id}`,
-      html:emailHtml
-    })
+      from: `"PRIVE" <khulimulirabin@gmail.com>`,
+      to: session.user.email,
+      subject: `Order Confirmation #${order.id}`,
+      html: emailHtml,
+    });
     return new Response(JSON.stringify(order), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },

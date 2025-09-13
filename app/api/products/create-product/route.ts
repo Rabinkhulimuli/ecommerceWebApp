@@ -14,7 +14,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Unauthorized access' }, { status: 401 });
     }
     if (!userId) {
-      return NextResponse.json({ error: 'user mut sign in first ' }, { status: 400 });
+      return NextResponse.json({ error: 'user must sign in first ' }, { status: 400 });
+    }
+    const shop = await prisma.shop.findUnique({
+      where: {
+        ownerId: userId,
+      },
+    });
+    if (!shop) {
+      return NextResponse.json({ error: 'You must open a shop first' }, { status: 401 });
     }
     const productData = {
       name: formData.get('name')?.toString() || '',
@@ -24,7 +32,6 @@ export async function POST(request: Request) {
       stock: Number(formData.get('stock')) || 0,
       discount: Number(formData.get('discount') || 0),
     };
-    console.log('product data', productData);
     const category = await prisma.category.findUnique({
       where: { id: productData.categoryId },
     });
@@ -39,7 +46,6 @@ export async function POST(request: Request) {
       console.error('No valid files found in the request');
       return NextResponse.json({ error: 'No valid files were uploaded' }, { status: 400 });
     }
-
 
     const uploadResults = await Promise.all(
       files.map(async file => {
@@ -73,19 +79,23 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-    console.log('Final product payload', {
-      ...productData,
-      images: successfulUploads,
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        name: productData.name,
+      },
     });
+    if (existingProduct) {
+      return NextResponse.json({ error: 'Product with that name already exists' }, { status: 400 });
+    }
     // Create product in database using Prisma
     const createdProduct = await prisma.product.create({
       data: {
+        shopId: shop.id,
         name: productData.name,
         description: productData.description,
         price: productData.price,
         stock: productData.stock,
         categoryId: productData.categoryId,
-
         discount: productData.discount,
         images: {
           createMany: {

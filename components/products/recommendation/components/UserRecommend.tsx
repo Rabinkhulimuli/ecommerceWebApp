@@ -15,12 +15,12 @@ export default function UserRecommendationList({
   limit = 5,
 }: RecommendationListProps) {
   const { recommendations, isLoading, error, refresh, source } = useRecommendations(userId, limit);
-console.log(error)
+  console.log(error);
 
   if (error) {
     return (
       <div className='recommendation-section'>
-        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
+        <h2 className='py-4 text-2xl font-semibold'>{title}</h2>
         <div className='error-state'>
           <p>Failed to load recommendations</p>
           <button onClick={refresh} className='retry-button'>
@@ -34,7 +34,7 @@ console.log(error)
   if (recommendations.length === 0) {
     return (
       <div className='recommendation-section'>
-        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
+        <h2 className='py-4 text-2xl font-semibold'>{title}</h2>
         <p>No recommendations available at this time.</p>
       </div>
     );
@@ -43,7 +43,7 @@ console.log(error)
   return (
     <div className='recommendation-section'>
       <div className='section-header'>
-        <h2 className='text-2xl font-semibold py-4'>{title}</h2>
+        <h2 className='py-4 text-2xl font-semibold'>{title}</h2>
         {source && (
           <span className='source-badge'>
             {source === 'algorithm' ? 'Personalized' : 'Popular'}

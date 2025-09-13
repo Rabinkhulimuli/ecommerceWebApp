@@ -3,16 +3,16 @@ import { useToast } from '@/hooks/use-toast';
 import React, { useState } from 'react';
 export default function Category() {
   const [name, setName] = useState('');
-  const[isLoading,setIsLoading]= useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const handleSubmit = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (!name.trim()) {
       toast({
         title: 'Error',
         description: 'Category name cannot be empty',
       });
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -33,15 +33,15 @@ export default function Category() {
           title: 'Success',
           description: 'Category added successfully!',
         });
-        setIsLoading(false)
-        setName(''); 
+        setIsLoading(false);
+        setName('');
       } else {
         toast({
           title: 'Error',
           description: 'Failed to add category',
           variant: 'destructive',
         });
-        setIsLoading(false)
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error submitting category:', error);
@@ -50,7 +50,7 @@ export default function Category() {
         description: 'Something went wrong',
         variant: 'destructive',
       });
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -71,9 +71,9 @@ export default function Category() {
         type='button'
         disabled={isLoading}
         onClick={handleSubmit}
-        className={`mt-2 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-all duration-700 ease-in-out cursor-pointer ${isLoading?"animate-in":""}`}
+        className={`mt-2 cursor-pointer rounded bg-blue-600 px-4 py-2 text-white transition-all duration-700 ease-in-out hover:bg-blue-700 ${isLoading ? 'animate-in' : ''}`}
       >
-        {isLoading?"Submitting...":"Submit"}
+        {isLoading ? 'Submitting...' : 'Submit'}
       </button>
     </div>
   );

@@ -69,11 +69,19 @@ export default function Header() {
       url: '/contact',
     },
   ];
+  const getUser = async () => {
+    const res = await fetch('/api/user');
+    if (!res.ok) {
+      signOut();
+    }
+  };
   useEffect(() => {
-    if (data?.user) setUser(data.user);
+    if (data?.user) {
+      setUser(data.user);
+      getUser();
+    }
   }, [data]);
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -224,6 +232,7 @@ export default function Header() {
         {/* Desktop Nav */}
         <div className='hidden justify-center gap-8 py-2 lg:flex'>
           {user?.role === 'ADMIN' && <AdminComponent />}
+          {user?.role === 'SUPERADMIN' && <AdminComponent />}
 
           {navArray.map(list => (
             <span key={list.id}>
@@ -481,16 +490,16 @@ export default function Header() {
           <Link
             href='/products/cart'
             onClick={handleMenuOpen}
-            className={`flex items-center gap-5 hover:text-blue-600  ${
+            className={`flex items-center gap-5 hover:text-blue-600 ${
               pathname == '/products/cart' ? 'text-rose-600' : ''
             }`}
           >
             <span> Cart</span>
             {itemCounts() !== null && (
-                  <Badge className=' flex px-2  items-center justify-center rounded-md  text-xs'>
-                    {itemCounts()}
-                  </Badge>
-                )}
+              <Badge className='flex items-center justify-center rounded-md px-2 text-xs'>
+                {itemCounts()}
+              </Badge>
+            )}
             {pathname == '/products/cart' && (
               <span>
                 <Sparkles className='h-5 w-5' />{' '}
